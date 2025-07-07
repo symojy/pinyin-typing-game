@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
 
 const questions = [
   { hanzi: ['熊', '猫'], pinyin: ['xiong', 'mao'], tones: [3, 1] },
