@@ -103,7 +103,7 @@ export default function Game() {
             </div>
             <div className="text-3xl mb-2">{char}</div>
             <input
-              ref={(el) => (inputRefs.current[i] = el)}
+              ref={(el) => { inputRefs.current[i] = el }}
               inputMode="text"
               className="w-20 p-1 border rounded text-center"
               value={inputs[i] || ''}
