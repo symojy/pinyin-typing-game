@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const questions = [
   { hanzi: ['熊', '猫'], pinyin: ['xiong', 'mao'], tones: [3, 1] },
@@ -15,6 +15,8 @@ export default function Game() {
   const [selectedTones, setSelectedTones] = useState<(1 | 2 | 3 | 4 | null)[]>([]);
   const [started, setStarted] = useState(false);
 
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const current = questions[currentIndex % questions.length];
 
   useEffect(() => {
@@ -23,6 +25,7 @@ export default function Game() {
       return () => clearTimeout(timer);
     } else {
       setStarted(true);
+      setInputs(Array(current.hanzi.length).fill(''));
       setSelectedTones(Array(current.hanzi.length).fill(null));
     }
   }, [countdown]);
@@ -34,10 +37,17 @@ export default function Game() {
     }
   }, [started]);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
-    const splitted = value.match(/[a-z]+/g) || [];
-    setInputs(splitted);
+  const handleInput = (index: number, value: string) => {
+    const newInputs = [...inputs];
+    newInputs[index] = value.toLowerCase();
+    setInputs(newInputs);
+
+    // 自動フォーカス（スマホ対応に setTimeout）
+    if (value && index + 1 < current.hanzi.length) {
+      setTimeout(() => {
+        inputRefs.current[index + 1]?.focus();
+      }, 100);
+    }
   };
 
   const selectTone = (index: number, tone: 1 | 2 | 3 | 4) => {
@@ -50,16 +60,22 @@ export default function Game() {
     const pinyinMatch = JSON.stringify(inputs) === JSON.stringify(current.pinyin);
     const toneMatch = JSON.stringify(selectedTones) === JSON.stringify(current.tones);
 
-    if (pinyinMatch && toneMatch) setScore((s) => s + 10);
+    if (pinyinMatch && toneMatch) {
+      setScore((s) => s + 10);
+    }
 
-    setInputs([]);
+    setInputs(Array(current.hanzi.length).fill(''));
     setSelectedTones(Array(current.hanzi.length).fill(null));
     setCurrentIndex((i) => i + 1);
   };
 
   useEffect(() => {
-    if (inputs.length === current.hanzi.length &&
-        selectedTones.every((t) => t !== null)) {
+    if (
+      inputs.length === current.hanzi.length &&
+      selectedTones.length === current.hanzi.length &&
+      inputs.every((input) => input) &&
+      selectedTones.every((tone) => tone !== null)
+    ) {
       checkAnswer();
     }
   }, [inputs, selectedTones]);
@@ -87,10 +103,11 @@ export default function Game() {
             </div>
             <div className="text-3xl mb-2">{char}</div>
             <input
+              ref={(el) => (inputRefs.current[i] = el)}
               inputMode="text"
               className="w-20 p-1 border rounded text-center"
               value={inputs[i] || ''}
-              onChange={handleInput}
+              onChange={(e) => handleInput(i, e.target.value)}
               spellCheck={false}
               autoCorrect="off"
               autoCapitalize="off"
