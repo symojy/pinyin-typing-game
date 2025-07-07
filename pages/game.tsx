@@ -87,7 +87,7 @@ export default function Game() {
             </div>
             <div className="text-3xl mb-2">{char}</div>
             <input
-              inputMode="latin"
+              inputMode="text"
               className="w-20 p-1 border rounded text-center"
               value={inputs[i] || ''}
               onChange={handleInput}
