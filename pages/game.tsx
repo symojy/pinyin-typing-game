@@ -176,7 +176,6 @@ const handleRestart = () => {
           keyId={`q-${score}`}
           hanzi={current.hanzi}
           currentCharIndex={charIndex}
-          showIcon={showCorrectIcon}
           pinyinSolvedIndices={pinyinSolvedIndices}
           glowingCharIndex={glowingCharIndex}
         />
