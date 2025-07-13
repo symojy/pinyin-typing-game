@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { WordCard } from '../components/WordCard';
 import { AnimatePresence } from 'framer-motion';
 import beginnerQuestions from '../data/questions-beginner.json';
+import { useCallback } from 'react';
 
 const toneSymbols = ['—', '／', '∨', '＼'];
 const toneKeys = ['u', 'i', 'o', 'p'];
@@ -42,45 +43,46 @@ export default function Game() {
     }
   }, [started, timeLeft]);
 
-  const checkPinyin = (value: string) => {
- 　 const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
-  
-    if (value.length < expectedPinyin.length) return;
+const checkPinyin = (value: string) => {
+  const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
 
-    if (value.toLowerCase() === expectedPinyin) {
-      const tone = expectedTone;
-      setPinyinSolvedIndices((prev) =>
-        prev.includes(charIndex) ? prev : [...prev, charIndex]
-      );
-      setGlowingCharIndex(charIndex);
-      setTimeout(() => {
-        setGlowingCharIndex(null);
-      }, 300);
+  if (normalizedInput.length < expectedPinyin.length) return;
 
-      if (tone === 0) {
-        const isLastChar = charIndex + 1 >= current.hanzi.length;
-        if (isLastChar) {
-          setScore((s) => s + 10);
-          setCurrent(getRandomQuestion());
-          setCharIndex(0);
-          setPinyinSolvedIndices([]);
-        } else {
-          setCharIndex((i) => i + 1);
-        }
-        setInput('');
-        inputRef.current?.focus();
+  if (normalizedInput === expectedPinyin) {
+    const tone = expectedTone;
+    setPinyinSolvedIndices((prev) =>
+      prev.includes(charIndex) ? prev : [...prev, charIndex]
+    );
+    setGlowingCharIndex(charIndex);
+    setTimeout(() => {
+      setGlowingCharIndex(null);
+    }, 300);
+
+    if (tone === 0) {
+      const isLastChar = charIndex + 1 >= current.hanzi.length;
+      if (isLastChar) {
+        setScore((s) => s + 10);
+        setCurrent(getRandomQuestion());
+        setCharIndex(0);
+        setPinyinSolvedIndices([]);
       } else {
-        setShowToneButtons(true);
+        setCharIndex((i) => i + 1);
       }
-    } else {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
       setInput('');
       inputRef.current?.focus();
+    } else {
+      setShowToneButtons(true);
     }
-  };
+  } else {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+    setInput('');
+    inputRef.current?.focus();
+  }
+}; // ← ✅ ここで checkPinyin 関数を閉じる
 
-  const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
+
+  const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
     const index = tone - 1;
     setSelectedToneIndex(index);
     inputRef.current?.blur();
@@ -114,7 +116,7 @@ export default function Game() {
       }, 500);
       inputRef.current?.focus();
     }
-  };
+  }, [expectedTone, charIndex, current]);
 
 const handleRestart = () => {
   setScore(0);
@@ -150,7 +152,7 @@ const handleRestart = () => {
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [showToneButtons]);
+  }, [showToneButtons, handleToneSelect]);
 
   const handleFocus = () => {
     if (!started) setStarted(true);
