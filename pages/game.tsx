@@ -15,7 +15,6 @@ export default function Game() {
   const [charIndex, setCharIndex] = useState(0);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
-  const [showCorrectIcon, setShowCorrectIcon] = useState(false);
   const [shake, setShake] = useState(false);
   const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
   const [glowingCharIndex, setGlowingCharIndex] = useState<number | null>(null);
@@ -44,7 +43,8 @@ export default function Game() {
   }, [started, timeLeft]);
 
   const checkPinyin = (value: string) => {
-
+ 　 const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
+  
     if (value.length < expectedPinyin.length) return;
 
     if (value.toLowerCase() === expectedPinyin) {
@@ -53,10 +53,8 @@ export default function Game() {
         prev.includes(charIndex) ? prev : [...prev, charIndex]
       );
       setGlowingCharIndex(charIndex);
-      setShowCorrectIcon(true);
       setTimeout(() => {
         setGlowingCharIndex(null);
-        setShowCorrectIcon(false);
       }, 300);
 
       if (tone === 0) {
@@ -89,10 +87,8 @@ export default function Game() {
 
     if (tone === expectedTone) {
       setIsToneCorrect(true);
-      setShowCorrectIcon(true);
 
       setTimeout(() => {
-        setShowCorrectIcon(false);
         const isLastChar = charIndex + 1 >= current.hanzi.length;
         if (isLastChar) {
           setScore((s) => s + 10);
@@ -125,7 +121,6 @@ const handleRestart = () => {
   setCharIndex(0);
   setInput('');
   setShowToneButtons(false);
-  setShowCorrectIcon(false);
   setShake(false);
   setPinyinSolvedIndices([]);
   setGlowingCharIndex(null);
