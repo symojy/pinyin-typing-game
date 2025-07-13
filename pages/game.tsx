@@ -44,7 +44,6 @@ export default function Game() {
   }, [started, timeLeft]);
 
   const checkPinyin = (value: string) => {
-　  const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
 
     if (value.length < expectedPinyin.length) return;
 
@@ -120,6 +119,24 @@ export default function Game() {
       inputRef.current?.focus();
     }
   };
+
+const handleRestart = () => {
+  setScore(0);
+  setCharIndex(0);
+  setInput('');
+  setShowToneButtons(false);
+  setShowCorrectIcon(false);
+  setShake(false);
+  setPinyinSolvedIndices([]);
+  setGlowingCharIndex(null);
+  setSelectedToneIndex(null);
+  setIsToneCorrect(null);
+  setTimeLeft(60);
+  setCurrent(getRandomQuestion());
+  setStarted(false); // ← ここがポイント！
+  // inputRef.current?.focus(); ← これもしない（Tap to Start 待ち）
+};
+
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -231,11 +248,18 @@ export default function Game() {
       )}
 
       {timeLeft === 0 && (
-        <div className="text-center mt-6">
-          <p className="text-2xl font-bold">⌛ 時間切れ！</p>
-          <p className="text-lg mt-2">合計得点：{score} 点</p>
-        </div>
-      )}
+  <div className="text-center mt-6">
+    <p className="text-2xl font-bold">⌛ 時間切れ！</p>
+    <p className="text-lg mt-2">合計得点：{score} 点</p>
+    <button
+      onClick={handleRestart}
+      className="mt-4 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+    >
+      🔁 もう一度初級を開始
+    </button>
+  </div>
+)}
+
     </main>
   );
 }

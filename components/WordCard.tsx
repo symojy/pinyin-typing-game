@@ -1,11 +1,10 @@
 'use client';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import clsx from "clsx";
 
 type Props = {
   hanzi: string[];
   currentCharIndex: number;
-  showIcon: boolean;
   pinyinSolvedIndices: number[];
   keyId: string;
   glowingCharIndex: number | null;
@@ -14,7 +13,6 @@ type Props = {
 export function WordCard({
   hanzi,
   currentCharIndex,
-  showIcon,
   pinyinSolvedIndices,
   keyId,
   glowingCharIndex,
