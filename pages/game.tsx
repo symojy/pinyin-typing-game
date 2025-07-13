@@ -127,7 +127,7 @@ export default function Game() {
             <button
               key={tone}
               className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-              onClick={() => handleToneSelect(tone)}
+              onClick={() => handleToneSelect(tone as 1 | 2 | 3 | 4)}
             >
               第{tone}声
             </button>
