@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import clsx from 'clsx';
 
 const questions = [
   { hanzi: ['熊', '猫'], pinyin: ['xiong', 'mao'], tones: [3, 1] },
@@ -11,13 +12,19 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [inputs, setInputs] = useState<string[]>([]);
-  const [selectedTones, setSelectedTones] = useState<(1 | 2 | 3 | 4 | null)[]>([]);
+
+  const [charIndex, setCharIndex] = useState(0); // 今の文字（熊 or 猫）
+  const [input, setInput] = useState('');
+  const [selectedTone, setSelectedTone] = useState<1 | 2 | 3 | 4 | null>(null);
+  const [showToneButtons, setShowToneButtons] = useState(false);
+  const [showCorrectIcon, setShowCorrectIcon] = useState(false);
+  const [shake, setShake] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const [started, setStarted] = useState(false);
-
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
   const current = questions[currentIndex % questions.length];
+  const expectedPinyin = current.pinyin[charIndex];
+  const expectedTone = current.tones[charIndex];
 
   useEffect(() => {
     if (countdown > 0) {
@@ -25,8 +32,6 @@ export default function Game() {
       return () => clearTimeout(timer);
     } else {
       setStarted(true);
-      setInputs(Array(current.hanzi.length).fill(''));
-      setSelectedTones(Array(current.hanzi.length).fill(null));
     }
   }, [countdown]);
 
@@ -37,48 +42,42 @@ export default function Game() {
     }
   }, [started]);
 
-  const handleInput = (index: number, value: string) => {
-    const newInputs = [...inputs];
-    newInputs[index] = value.toLowerCase();
-    setInputs(newInputs);
-
-    // 自動フォーカス（スマホ対応に setTimeout）
-    if (value && index + 1 < current.hanzi.length) {
-      setTimeout(() => {
-        inputRefs.current[index + 1]?.focus();
-      }, 100);
-    }
-  };
-
-  const selectTone = (index: number, tone: 1 | 2 | 3 | 4) => {
-    const newTones = [...selectedTones];
-    newTones[index] = tone;
-    setSelectedTones(newTones);
-  };
-
-  const checkAnswer = () => {
-    const pinyinMatch = JSON.stringify(inputs) === JSON.stringify(current.pinyin);
-    const toneMatch = JSON.stringify(selectedTones) === JSON.stringify(current.tones);
-
-    if (pinyinMatch && toneMatch) {
-      setScore((s) => s + 10);
-    }
-
-    setInputs(Array(current.hanzi.length).fill(''));
-    setSelectedTones(Array(current.hanzi.length).fill(null));
-    setCurrentIndex((i) => i + 1);
-  };
-
   useEffect(() => {
-    if (
-      inputs.length === current.hanzi.length &&
-      selectedTones.length === current.hanzi.length &&
-      inputs.every((input) => input) &&
-      selectedTones.every((tone) => tone !== null)
-    ) {
-      checkAnswer();
+    if (input.length >= expectedPinyin.length && !showToneButtons) {
+      if (input.toLowerCase() === expectedPinyin) {
+        setShowToneButtons(true);
+        setShowCorrectIcon(true);
+        setTimeout(() => setShowCorrectIcon(false), 500);
+      } else {
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+        setInput('');
+      }
     }
-  }, [inputs, selectedTones]);
+  }, [input]);
+
+  const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
+    if (tone === expectedTone) {
+      if (charIndex + 1 < current.hanzi.length) {
+        // 次の文字へ
+        setCharIndex((i) => i + 1);
+        setInput('');
+        setSelectedTone(null);
+        setShowToneButtons(false);
+      } else {
+        // 問題終了
+        setScore((s) => s + 10);
+        setCurrentIndex((i) => i + 1);
+        setCharIndex(0);
+        setInput('');
+        setSelectedTone(null);
+        setShowToneButtons(false);
+      }
+    } else {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
+  };
 
   if (!started) {
     return (
@@ -95,41 +94,50 @@ export default function Game() {
         <div>残り: {timeLeft}s</div>
       </div>
 
-      <div className="flex justify-center gap-6 mb-4">
+      <div className="flex justify-center gap-4 text-3xl mb-6">
         {current.hanzi.map((char, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <div className="text-sm text-gray-500 h-5">
-              {selectedTones[i] ? `第${selectedTones[i]}声` : ''}
-            </div>
-            <div className="text-3xl mb-2">{char}</div>
-            <input
-              ref={(el) => { inputRefs.current[i] = el }}
-              inputMode="text"
-              className="w-20 p-1 border rounded text-center"
-              value={inputs[i] || ''}
-              onChange={(e) => handleInput(i, e.target.value)}
-              spellCheck={false}
-              autoCorrect="off"
-              autoCapitalize="off"
-            />
-          </div>
+          <span
+            key={i}
+            className={clsx(
+              i === charIndex ? 'underline decoration-2 underline-offset-8' : ''
+            )}
+          >
+            {char}
+          </span>
         ))}
+        {showCorrectIcon && <span className="ml-2">👍️</span>}
       </div>
 
-      <div className="flex justify-center gap-4">
-        {[1, 2, 3, 4].map((tone) => (
-          <button
-            key={tone}
-            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            onClick={() => {
-              const targetIndex = selectedTones.findIndex((t) => t === null);
-              if (targetIndex !== -1) selectTone(targetIndex, tone as 1 | 2 | 3 | 4);
-            }}
-          >
-            第{tone}声
-          </button>
-        ))}
+      <div className="flex justify-center mb-4">
+        <input
+          ref={inputRef}
+          type="text"
+          className={clsx(
+            "w-40 p-2 border rounded text-center text-lg",
+            shake && "animate-shake"
+          )}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          spellCheck={false}
+          autoCorrect="off"
+          autoCapitalize="off"
+          disabled={showToneButtons}
+        />
       </div>
+
+      {showToneButtons && (
+        <div className="flex justify-center gap-4">
+          {[1, 2, 3, 4].map((tone) => (
+            <button
+              key={tone}
+              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+              onClick={() => handleToneSelect(tone as 1 | 2 | 3 | 4)}
+            >
+              第{tone}声
+            </button>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
