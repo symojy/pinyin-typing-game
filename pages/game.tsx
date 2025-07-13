@@ -12,10 +12,8 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-
   const [charIndex, setCharIndex] = useState(0); // 今の文字（熊 or 猫）
   const [input, setInput] = useState('');
-  const [selectedTone, setSelectedTone] = useState<1 | 2 | 3 | 4 | null>(null);
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
   const [shake, setShake] = useState(false);
@@ -40,7 +38,7 @@ export default function Game() {
       const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearInterval(timer);
     }
-  }, [started]);
+  }, [started, timeLeft]);
 
   useEffect(() => {
     if (input.length >= expectedPinyin.length && !showToneButtons) {
@@ -54,7 +52,7 @@ export default function Game() {
         setInput('');
       }
     }
-  }, [input]);
+  }, [input, expectedPinyin, showToneButtons]);
 
   const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
     if (tone === expectedTone) {
@@ -62,7 +60,6 @@ export default function Game() {
         // 次の文字へ
         setCharIndex((i) => i + 1);
         setInput('');
-        setSelectedTone(null);
         setShowToneButtons(false);
       } else {
         // 問題終了
@@ -70,7 +67,6 @@ export default function Game() {
         setCurrentIndex((i) => i + 1);
         setCharIndex(0);
         setInput('');
-        setSelectedTone(null);
         setShowToneButtons(false);
       }
     } else {
@@ -131,7 +127,7 @@ export default function Game() {
             <button
               key={tone}
               className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-              onClick={() => handleToneSelect(tone as 1 | 2 | 3 | 4)}
+              onClick={() => handleToneSelect(tone)}
             >
               第{tone}声
             </button>
