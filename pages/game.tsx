@@ -12,7 +12,7 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0); // 今の文字（熊 or 猫）
+  const [charIndex, setCharIndex] = useState(0);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
@@ -23,6 +23,25 @@ export default function Game() {
   const current = questions[currentIndex % questions.length];
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!showToneButtons) return;
+      const key = e.key.toLowerCase();
+      let tone: 1 | 2 | 3 | 4 | null = null;
+      if (key === 'u') tone = 1;
+      else if (key === 'i') tone = 2;
+      else if (key === 'o') tone = 3;
+      else if (key === 'p') tone = 4;
+
+      if (tone) {
+        e.preventDefault(); // 入力欄に文字が入らないようにする
+        handleToneSelect(tone);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [showToneButtons]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -50,28 +69,33 @@ export default function Game() {
         setShake(true);
         setTimeout(() => setShake(false), 500);
         setInput('');
+        inputRef.current?.focus();
       }
     }
   }, [input, expectedPinyin, showToneButtons]);
 
   const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
     if (tone === expectedTone) {
+      setShowCorrectIcon(true);
+      setTimeout(() => setShowCorrectIcon(false), 500);
+
       if (charIndex + 1 < current.hanzi.length) {
-        // 次の文字へ
         setCharIndex((i) => i + 1);
         setInput('');
         setShowToneButtons(false);
+        inputRef.current?.focus();
       } else {
-        // 問題終了
         setScore((s) => s + 10);
         setCurrentIndex((i) => i + 1);
         setCharIndex(0);
         setInput('');
         setShowToneButtons(false);
+        inputRef.current?.focus();
       }
     } else {
       setShake(true);
       setTimeout(() => setShake(false), 500);
+      inputRef.current?.focus();
     }
   };
 
@@ -117,7 +141,7 @@ export default function Game() {
           spellCheck={false}
           autoCorrect="off"
           autoCapitalize="off"
-          disabled={showToneButtons}
+          disabled={false}
         />
       </div>
 
