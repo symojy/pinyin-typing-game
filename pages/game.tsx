@@ -8,7 +8,10 @@ const questions = [
 ];
 
 export default function Game() {
+  const [hasStarted, setHasStarted] = useState(false);
   const [countdown, setCountdown] = useState(3);
+  const [started, setStarted] = useState(false);
+
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -19,38 +22,31 @@ export default function Game() {
   const [shake, setShake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [started, setStarted] = useState(false);
   const current = questions[currentIndex % questions.length];
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (!showToneButtons) return;
-      const key = e.key.toLowerCase();
-      let tone: 1 | 2 | 3 | 4 | null = null;
-      if (key === 'u') tone = 1;
-      else if (key === 'i') tone = 2;
-      else if (key === 'o') tone = 3;
-      else if (key === 'p') tone = 4;
-
-      if (tone) {
-        e.preventDefault(); // 入力欄に文字が入らないようにする
-        handleToneSelect(tone);
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [showToneButtons]);
+  const handleFocus = () => {
+    if (!hasStarted) {
+      setHasStarted(true);
+      setCountdown(3);
+    }
+  };
 
   useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    if (countdown > 0 && hasStarted && !started) {
+      const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
       return () => clearTimeout(timer);
-    } else {
+    } else if (hasStarted && !started && countdown === 0) {
       setStarted(true);
     }
-  }, [countdown]);
+  }, [countdown, hasStarted, started]);
+
+  useEffect(() => {
+    if (started) {
+      inputRef.current?.focus(); // ゲーム開始時に必ずフォーカスを当てる（PC対策）
+    }
+  }, [started]);
 
   useEffect(() => {
     if (started && timeLeft > 0) {
@@ -99,54 +95,83 @@ export default function Game() {
     }
   };
 
-  if (!started) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <p className="text-2xl">{countdown > 0 ? countdown : 'Start!'}</p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!showToneButtons) return;
+      const key = e.key.toLowerCase();
+      let tone: 1 | 2 | 3 | 4 | null = null;
+      if (key === 'u') tone = 1;
+      else if (key === 'i') tone = 2;
+      else if (key === 'o') tone = 3;
+      else if (key === 'p') tone = 4;
+
+      if (tone) {
+        e.preventDefault();
+        handleToneSelect(tone);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [showToneButtons]);
 
   return (
-    <main className="p-4 max-w-md mx-auto">
-      <div className="flex justify-between text-lg font-bold mb-4">
-        <div>得点: {score}</div>
-        <div>残り: {timeLeft}s</div>
-      </div>
+    <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-center">
+      {/* ゲームUI */}
+      {started && (
+        <>
+          <div className="flex justify-between w-full text-lg font-bold mb-4">
+            <div>得点: {score}</div>
+            <div>残り: {timeLeft}s</div>
+          </div>
 
-      <div className="flex justify-center gap-4 text-3xl mb-6">
-        {current.hanzi.map((char, i) => (
-          <span
-            key={i}
-            className={clsx(
-              i === charIndex ? 'underline decoration-2 underline-offset-8' : ''
-            )}
-          >
-            {char}
-          </span>
-        ))}
-        {showCorrectIcon && <span className="ml-2">👍️</span>}
-      </div>
+          <div className="flex justify-center gap-4 text-3xl mb-6">
+            {current.hanzi.map((char, i) => (
+              <span
+                key={i}
+                className={clsx(
+                  i === charIndex ? 'underline decoration-2 underline-offset-8' : ''
+                )}
+              >
+                {char}
+              </span>
+            ))}
+            {showCorrectIcon && <span className="ml-2">👍️</span>}
+          </div>
+        </>
+      )}
 
-      <div className="flex justify-center mb-4">
-        <input
-          ref={inputRef}
-          type="text"
-          className={clsx(
-            "w-40 p-2 border rounded text-center text-lg",
-            shake && "animate-shake"
-          )}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          spellCheck={false}
-          autoCorrect="off"
-          autoCapitalize="off"
-          disabled={false}
-        />
-      </div>
+      {/* 常に表示される input */}
+      <input
+        ref={inputRef}
+        type="text"
+        className={clsx(
+          "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300",
+          shake && "animate-shake",
+          !hasStarted
+            ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
+            : !started
+            ? "bg-gray-200 text-gray-600 font-bold"
+            : "bg-white border border-gray-400 text-black"
+        )}
+        placeholder={
+          !hasStarted
+            ? "▶ タップでスタート"
+            : !started
+            ? `${countdown}`
+            : "タイプしてね…"
+        }
+        readOnly={!started}
+        value={started ? input : ""}
+        onChange={(e) => setInput(e.target.value)}
+        onFocus={handleFocus}
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
+      />
 
-      {showToneButtons && (
-        <div className="flex justify-center gap-4">
+      {/* 声調ボタン */}
+      {showToneButtons && started && (
+        <div className="flex justify-center gap-4 mt-4">
           {[1, 2, 3, 4].map((tone) => (
             <button
               key={tone}
