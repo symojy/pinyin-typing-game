@@ -1,27 +1,8 @@
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
-
-const questions = [
-  { hanzi: ['熊', '猫'], pinyin: ['xiong', 'mao'], tones: [2, 1] },
-  { hanzi: ['手', '机'], pinyin: ['shou', 'ji'], tones: [3, 1] },
-  { hanzi: ['你', '好'], pinyin: ['ni', 'hao'], tones: [3, 3] },
-  { hanzi: ['朋', '友'], pinyin: ['peng', 'you'], tones: [2, 3] },
-  { hanzi: ['老', '师'], pinyin: ['lao', 'shi'], tones: [3, 1] },
-  { hanzi: ['学', '生'], pinyin: ['xue', 'sheng'], tones: [2, 1] },
-  { hanzi: ['电', '脑'], pinyin: ['dian', 'nao'], tones: [4, 3] },
-  { hanzi: ['天', '气'], pinyin: ['tian', 'qi'], tones: [1, 4] },
-  { hanzi: ['喜', '欢'], pinyin: ['xi', 'huan'], tones: [3, 1] },
-  { hanzi: ['汉', '语'], pinyin: ['han', 'yu'], tones: [4, 3] },
-  { hanzi: ['苹', '果'], pinyin: ['ping', 'guo'], tones: [2, 3] },
-  { hanzi: ['谢', '谢'], pinyin: ['xie', 'xie'], tones: [4, 4] },
-  { hanzi: ['再', '见'], pinyin: ['zai', 'jian'], tones: [4, 4] },
-  { hanzi: ['三', '明', '治'], pinyin: ['san', 'ming', 'zhi'], tones: [1, 2, 4] },
-  { hanzi: ['图', '书', '馆'], pinyin: ['tu', 'shu', 'guan'], tones: [2, 1, 3] },
-  { hanzi: ['美', '国'], pinyin: ['mei', 'guo'], tones: [3, 2] },
-  { hanzi: ['中', '国'], pinyin: ['zhong', 'guo'], tones: [1, 2] },
-  { hanzi: ['上', '海'], pinyin: ['shang', 'hai'], tones: [4, 3] },
-  { hanzi: ['北', '京'], pinyin: ['bei', 'jing'], tones: [3, 1] },
-];
+import { WordCard } from '../components/WordCard';
+import { AnimatePresence } from 'framer-motion';
+import beginnerQuestions from '../data/questions-beginner.json';
 
 const toneSymbols = ['—', '／', '∨', '＼'];
 const toneKeys = ['u', 'i', 'o', 'p'];
@@ -31,23 +12,29 @@ export default function Game() {
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
   const [shake, setShake] = useState(false);
+  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
+  const [glowingCharIndex, setGlowingCharIndex] = useState<number | null>(null);
+  const [current, setCurrent] = useState(beginnerQuestions[0]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedToneIndex, setSelectedToneIndex] = useState<number | null>(null);
+  const [isToneCorrect, setIsToneCorrect] = useState<boolean | null>(null);
 
-  const current = questions[currentIndex % questions.length];
+  const getRandomQuestion = () => {
+    const index = Math.floor(Math.random() * beginnerQuestions.length);
+    return beginnerQuestions[index];
+  };
+
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
 
-  const handleFocus = () => {
-    if (!started) {
-      setStarted(true);
-    }
-  };
+  useEffect(() => {
+    setCurrent(getRandomQuestion());
+  }, []);
 
   useEffect(() => {
     if (started && timeLeft > 0) {
@@ -56,46 +43,80 @@ export default function Game() {
     }
   }, [started, timeLeft]);
 
-  useEffect(() => {
-    if (
-      input.length >= expectedPinyin.length &&
-      !showToneButtons &&
-      timeLeft > 0
-    ) {
-      if (input.toLowerCase() === expectedPinyin) {
-        setShowToneButtons(true);
-        setShowCorrectIcon(true);
-        setTimeout(() => setShowCorrectIcon(false), 500);
-      } else {
-        setShake(true);
-        setTimeout(() => setShake(false), 500);
+  const checkPinyin = (value: string) => {
+　  const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
+
+    if (value.length < expectedPinyin.length) return;
+
+    if (value.toLowerCase() === expectedPinyin) {
+      const tone = expectedTone;
+      setPinyinSolvedIndices((prev) =>
+        prev.includes(charIndex) ? prev : [...prev, charIndex]
+      );
+      setGlowingCharIndex(charIndex);
+      setShowCorrectIcon(true);
+      setTimeout(() => {
+        setGlowingCharIndex(null);
+        setShowCorrectIcon(false);
+      }, 300);
+
+      if (tone === 0) {
+        const isLastChar = charIndex + 1 >= current.hanzi.length;
+        if (isLastChar) {
+          setScore((s) => s + 10);
+          setCurrent(getRandomQuestion());
+          setCharIndex(0);
+          setPinyinSolvedIndices([]);
+        } else {
+          setCharIndex((i) => i + 1);
+        }
         setInput('');
         inputRef.current?.focus();
-      }
-    }
-  }, [input, expectedPinyin, showToneButtons, timeLeft]);
-
-  const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
-    if (tone === expectedTone) {
-      setShowCorrectIcon(true);
-      setTimeout(() => setShowCorrectIcon(false), 500);
-
-      const isLastChar = charIndex + 1 >= current.hanzi.length;
-
-      if (isLastChar) {
-        setScore((s) => s + 10);
-        setCurrentIndex((i) => i + 1);
-        setCharIndex(0);
       } else {
-        setCharIndex((i) => i + 1);
+        setShowToneButtons(true);
       }
-
-      setInput('');
-      setShowToneButtons(false);
-      inputRef.current?.focus();
     } else {
       setShake(true);
       setTimeout(() => setShake(false), 500);
+      setInput('');
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
+    const index = tone - 1;
+    setSelectedToneIndex(index);
+    inputRef.current?.blur();
+
+    if (tone === expectedTone) {
+      setIsToneCorrect(true);
+      setShowCorrectIcon(true);
+
+      setTimeout(() => {
+        setShowCorrectIcon(false);
+        const isLastChar = charIndex + 1 >= current.hanzi.length;
+        if (isLastChar) {
+          setScore((s) => s + 10);
+          setCurrent(getRandomQuestion());
+          setCharIndex(0);
+          setPinyinSolvedIndices([]);
+        } else {
+          setCharIndex((i) => i + 1);
+        }
+        setInput('');
+        setShowToneButtons(false);
+        inputRef.current?.focus();
+        setSelectedToneIndex(null);
+        setIsToneCorrect(null);
+      }, 300);
+    } else {
+      setIsToneCorrect(false);
+      setShake(true);
+      setTimeout(() => {
+        setShake(false);
+        setSelectedToneIndex(null);
+        setIsToneCorrect(null);
+      }, 500);
       inputRef.current?.focus();
     }
   };
@@ -119,75 +140,96 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [showToneButtons]);
 
-  return (
-    <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-center">
-      {started && (
-        <>
-          <div className="flex justify-between w-full text-lg font-bold mb-4">
-            <div>得点: {score}</div>
-            <div>残り: {timeLeft}s</div>
-          </div>
+  const handleFocus = () => {
+    if (!started) setStarted(true);
+  };
 
-          <div className="flex justify-center gap-4 text-3xl mb-6 min-h-[48px]">
-            {timeLeft > 0 &&
-              current.hanzi.map((char, i) => (
-                <span
-                  key={i}
-                  className={clsx(
-                    i === charIndex
-                      ? 'underline decoration-2 underline-offset-8'
-                      : ''
-                  )}
-                >
-                  {char}
-                </span>
-              ))}
-            {showCorrectIcon && <span className="ml-2">👍️</span>}
-          </div>
-        </>
+  return (
+    <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start">
+      {started && (
+        <div className="flex justify-between w-full text-lg font-bold mb-4">
+          <div>得点: {score}</div>
+          <div>残り: {timeLeft}s</div>
+        </div>
       )}
+
+      <AnimatePresence mode="wait" initial={false}>
+        <WordCard
+          key={`q-${score}`}
+          keyId={`q-${score}`}
+          hanzi={current.hanzi}
+          currentCharIndex={charIndex}
+          showIcon={showCorrectIcon}
+          pinyinSolvedIndices={pinyinSolvedIndices}
+          glowingCharIndex={glowingCharIndex}
+        />
+      </AnimatePresence>
 
       <input
         ref={inputRef}
         type="text"
         className={clsx(
-          "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300",
-          shake && "animate-shake",
+          'w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mt-0',
+          shake && 'animate-shake',
+          showToneButtons && 'text-green-600 font-bold',
           !started
-            ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
-            : "bg-white border border-gray-400 text-black"
+            ? 'bg-blue-600 text-white font-bold cursor-pointer shadow'
+            : 'bg-white border border-gray-400 text-black'
         )}
-        placeholder={!started ? "▶Tap to start" : "type pinyin"}
+        placeholder={!started ? '▶Tap to start' : 'type pinyin'}
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+          setInput(value);
+          checkPinyin(value);
+        }}
         onFocus={handleFocus}
         spellCheck={false}
         autoCorrect="off"
         autoCapitalize="off"
         disabled={timeLeft === 0}
+        readOnly={showToneButtons}
       />
 
-{showToneButtons && started && timeLeft > 0 && (
-  <div className="flex justify-center gap-4 mt-4">
-    {toneSymbols.map((symbol, index) => (
-      <div key={index} className="flex flex-col items-center">
-        {/* 上部ラベル */}
-        <div className="text-xs text-gray-500 mb-1">{toneLabels[index]}</div>
+      {showToneButtons && (
+        <div className="mt-2 text-sm text-gray-600 text-center">
+          声調を選んでください（上のボタン or u/i/o/p キー）
+        </div>
+      )}
 
-        {/* 声調ボタン */}
-        <button
-          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 text-3xl font-bold"
-          onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
-        >
-          {symbol}
-        </button>
+      {showToneButtons && started && timeLeft > 0 && (
+        <div className="flex justify-center gap-4 mt-4">
+          {toneSymbols.map((symbol, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div className="text-xs text-gray-500 mb-1">
+                {toneLabels[index]}
+              </div>
+              <button
+                onClick={() =>
+                  handleToneSelect((index + 1) as 1 | 2 | 3 | 4)
+                }
+                className={clsx(
+                  'px-4 py-2 rounded text-3xl font-bold transition-colors duration-300',
+                  'hover:bg-gray-300',
+                  selectedToneIndex === index &&
+                    isToneCorrect === true &&
+                    'bg-green-100 border-2 border-green-500 animate-pulse',
+                  selectedToneIndex === index &&
+                    isToneCorrect === false &&
+                    'border-2 border-red-500 animate-shake',
+                  !(selectedToneIndex === index) && 'bg-gray-200'
+                )}
+              >
+                {symbol}
+              </button>
+              <div className="text-xs text-gray-500 mt-1">
+                ({toneKeys[index]})
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-        {/* 下部キー補足 */}
-        <div className="text-xs text-gray-500 mt-1">({toneKeys[index]})</div>
-      </div>
-    ))}
-  </div>
-)}
       {timeLeft === 0 && (
         <div className="text-center mt-6">
           <p className="text-2xl font-bold">⌛ 時間切れ！</p>
