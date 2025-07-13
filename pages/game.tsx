@@ -8,10 +8,7 @@ const questions = [
 ];
 
 export default function Game() {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [countdown, setCountdown] = useState(3);
   const [started, setStarted] = useState(false);
-
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,26 +24,10 @@ export default function Game() {
   const expectedTone = current.tones[charIndex];
 
   const handleFocus = () => {
-    if (!hasStarted) {
-      setHasStarted(true);
-      setCountdown(3);
+    if (!started) {
+      setStarted(true); // タップと同時に開始
     }
   };
-
-  useEffect(() => {
-    if (countdown > 0 && hasStarted && !started) {
-      const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (hasStarted && !started && countdown === 0) {
-      setStarted(true);
-    }
-  }, [countdown, hasStarted, started]);
-
-  useEffect(() => {
-    if (started) {
-      inputRef.current?.focus(); // ゲーム開始時に必ずフォーカスを当てる（PC対策）
-    }
-  }, [started]);
 
   useEffect(() => {
     if (started && timeLeft > 0) {
@@ -116,7 +97,6 @@ export default function Game() {
 
   return (
     <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-center">
-      {/* ゲームUI */}
       {started && (
         <>
           <div className="flex justify-between w-full text-lg font-bold mb-4">
@@ -140,28 +120,18 @@ export default function Game() {
         </>
       )}
 
-      {/* 常に表示される input */}
       <input
         ref={inputRef}
         type="text"
         className={clsx(
           "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300",
           shake && "animate-shake",
-          !hasStarted
+          !started
             ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
-            : !started
-            ? "bg-gray-200 text-gray-600 font-bold"
             : "bg-white border border-gray-400 text-black"
         )}
-        placeholder={
-          !hasStarted
-            ? "▶ タップでスタート"
-            : !started
-            ? `${countdown}`
-            : "タイプしてね…"
-        }
-        readOnly={!started}
-        value={started ? input : ""}
+        placeholder={!started ? "▶ タップしてスタート" : "タイプしてね…"}
+        value={input}
         onChange={(e) => setInput(e.target.value)}
         onFocus={handleFocus}
         spellCheck={false}
@@ -169,7 +139,6 @@ export default function Game() {
         autoCapitalize="off"
       />
 
-      {/* 声調ボタン */}
       {showToneButtons && started && (
         <div className="flex justify-center gap-4 mt-4">
           {[1, 2, 3, 4].map((tone) => (
