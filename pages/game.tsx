@@ -102,7 +102,9 @@ const checkPinyin = (value: string) => {
         }
         setInput('');
         setShowToneButtons(false);
-        inputRef.current?.focus();
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
         setSelectedToneIndex(null);
         setIsToneCorrect(null);
       }, 300);
