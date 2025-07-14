@@ -16,7 +16,7 @@ export default function Game() {
   const [charIndex, setCharIndex] = useState(0);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
-  const [shake, setShake] = useState(false);
+//   const [shake, setShake] = useState(false);
 // const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
 // const [glowingCharIndex, setGlowingCharIndex] = useState<number | null>(null);
   const [current, setCurrent] = useState(beginnerQuestions[0]);
@@ -249,12 +249,12 @@ useEffect(() => {
                 className={clsx(
                   'px-4 py-2 rounded text-3xl font-bold transition-colors duration-300',
                   'hover:bg-gray-300',
-                  selectedToneIndex === index &&
-                    isToneCorrect === true &&
-                    'bg-green-100 border-2 border-green-500 animate-pulse',
-                  selectedToneIndex === index &&
-                    isToneCorrect === false &&
-                    'border-2 border-red-500 animate-shake',
+                 //    selectedToneIndex === index &&
+                   //    isToneCorrect === true &&
+                   //    'bg-green-100 border-2 border-green-500 animate-pulse',
+                  //   selectedToneIndex === index &&
+                   //    isToneCorrect === false &&
+                    //   'border-2 border-red-500 animate-shake',
                   !(selectedToneIndex === index) && 'bg-gray-200'
                 )}
               >
