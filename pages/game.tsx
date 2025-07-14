@@ -219,7 +219,6 @@ useEffect(() => {
     setInput(value);
     checkPinyin(value);
   }}
-  style={showToneButtons ? { pointerEvents: 'none' } : {}}
   onFocus={handleFocus}
   spellCheck={false}
   autoCorrect="off"
