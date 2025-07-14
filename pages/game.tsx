@@ -214,16 +214,18 @@ useEffect(() => {
   placeholder={!started ? '▶Tap to start' : 'type pinyin'}
   value={input}
   onChange={(e) => {
-    if (showToneButtons) return; // 入力禁止処理はこちらで
+    if (showToneButtons) return; // ← ✅ 声調選択中は中身を更新しない
     const value = e.target.value;
     setInput(value);
     checkPinyin(value);
   }}
+  style={showToneButtons ? { pointerEvents: 'none' } : {}}
   onFocus={handleFocus}
   spellCheck={false}
   autoCorrect="off"
   autoCapitalize="off"
-  disabled={timeLeft === 0}
+  disabled={false}
+  readOnly={false}
 />
 
 
