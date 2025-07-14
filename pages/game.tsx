@@ -68,13 +68,14 @@ const checkPinyin = (value: string) => {
 
   if (normalizedInput === expectedPinyin) {
     const tone = expectedTone;
-    setPinyinSolvedIndices((prev) =>
-      prev.includes(charIndex) ? prev : [...prev, charIndex]
-    );
-    setGlowingCharIndex(charIndex);
-    setTimeout(() => {
-      setGlowingCharIndex(null);
-    }, 300);
+  // 🔧 一時的に削除
+  // setPinyinSolvedIndices((prev) =>
+  //   prev.includes(charIndex) ? prev : [...prev, charIndex]
+  // );
+  // setGlowingCharIndex(charIndex);
+  // setTimeout(() => {
+  //   setGlowingCharIndex(null);
+  // }, 300);
 
     if (tone === 0) {
       const isLastChar = charIndex + 1 >= current.hanzi.length;
