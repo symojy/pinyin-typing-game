@@ -190,14 +190,14 @@ useEffect(() => {
       )}
 
       <AnimatePresence mode="wait" initial={false}>
-        <WordCard
+<WordCard
+  key="wordcard" // React に使うキー（再生成を防ぐために固定）
+  keyId="wordcard" // Props に渡す required なプロパティ（motion用ならここも固定でOK）
   hanzi={current.hanzi}
   currentCharIndex={charIndex}
   pinyinSolvedIndices={pinyinSolvedIndices}
   glowingCharIndex={glowingCharIndex}
-// ❌ key を score に基づいて変更していた → これを削除 or 固定化
-  key="wordcard"
-        />
+/>
       </AnimatePresence>
 
 <input
