@@ -82,43 +82,54 @@ const checkPinyin = (value: string) => {
 }; // ← ✅ ここで checkPinyin 関数を閉じる
 
 
-  const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
-    const index = tone - 1;
-    setSelectedToneIndex(index);
-    inputRef.current?.blur();
+const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
+  const index = tone - 1;
+  setSelectedToneIndex(index);
+  inputRef.current?.blur(); // これはお好みで消してもOK
 
-    if (tone === expectedTone) {
-      setIsToneCorrect(true);
+  if (tone === expectedTone) {
+    setIsToneCorrect(true);
 
+    setTimeout(() => {
+      const isLastChar = charIndex + 1 >= current.hanzi.length;
+
+      if (isLastChar) {
+        setScore((s) => s + 10);
+        setCurrent(getRandomQuestion());
+        setCharIndex(0);
+        setPinyinSolvedIndices([]);
+      } else {
+        setCharIndex((i) => i + 1);
+      }
+
+      setInput('');
+
+      // ✅ 表示更新（トーンボタンを隠す）を先に実行
+      setShowToneButtons(false);
+
+      // ✅ 少し遅れて focus（iOS対策）
       setTimeout(() => {
-        const isLastChar = charIndex + 1 >= current.hanzi.length;
-        if (isLastChar) {
-          setScore((s) => s + 10);
-          setCurrent(getRandomQuestion());
-          setCharIndex(0);
-          setPinyinSolvedIndices([]);
-        } else {
-          setCharIndex((i) => i + 1);
-        }
-        setInput('');
-        setShowToneButtons(false);
+        inputRef.current?.focus();
+      }, 50);
+
+      setSelectedToneIndex(null);
+      setIsToneCorrect(null);
+    }, 300);
+  } else {
+    setIsToneCorrect(false);
+    setShake(true);
+    setTimeout(() => {
+      setShake(false);
+      setSelectedToneIndex(null);
+      setIsToneCorrect(null);
+    }, 500);
+
+    // ❗ ミス時も再フォーカスが必要（忘れずに）
     setTimeout(() => {
       inputRef.current?.focus();
-    }, 10);
-        setSelectedToneIndex(null);
-        setIsToneCorrect(null);
-      }, 300);
-    } else {
-      setIsToneCorrect(false);
-      setShake(true);
-      setTimeout(() => {
-        setShake(false);
-        setSelectedToneIndex(null);
-        setIsToneCorrect(null);
-      }, 500);
-      inputRef.current?.focus();
-    }
-  }, [expectedTone, charIndex, current]);
+    }, 50);
+  }
+}, [expectedTone, charIndex, current]);
 
 const handleRestart = () => {
   setScore(0);
@@ -180,31 +191,33 @@ const handleRestart = () => {
         />
       </AnimatePresence>
 
-      <input
-        ref={inputRef}
-        type="text"
-        className={clsx(
-          'w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mt-0',
-          shake && 'animate-shake',
-          showToneButtons && 'text-green-600 font-bold',
-          !started
-            ? 'bg-blue-600 text-white font-bold cursor-pointer shadow'
-            : 'bg-white border border-gray-400 text-black'
-        )}
-        placeholder={!started ? '▶Tap to start' : 'type pinyin'}
-        value={input}
-        onChange={(e) => {
-          const value = e.target.value;
-          setInput(value);
-          checkPinyin(value);
-        }}
-        onFocus={handleFocus}
-        spellCheck={false}
-        autoCorrect="off"
-        autoCapitalize="off"
-        disabled={timeLeft === 0}
-        readOnly={showToneButtons}
-      />
+<input
+  ref={inputRef}
+  type="text"
+  className={clsx(
+    'w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mt-0',
+    shake && 'animate-shake',
+    showToneButtons && 'text-green-600 font-bold',
+    !started
+      ? 'bg-blue-600 text-white font-bold cursor-pointer shadow'
+      : 'bg-white border border-gray-400 text-black'
+  )}
+  placeholder={!started ? '▶Tap to start' : 'type pinyin'}
+  value={input}
+  onChange={(e) => {
+    if (showToneButtons) return; // ← ✅ 声調選択中は入力不可にする
+    const value = e.target.value;
+    setInput(value);
+    checkPinyin(value);
+  }}
+  onFocus={handleFocus}
+  spellCheck={false}
+  autoCorrect="off"
+  autoCapitalize="off"
+  disabled={timeLeft === 0}
+  readOnly={false} // ← ✅ 常に false にする
+/>
+
 
       {showToneButtons && (
         <div className="mt-2 text-sm text-gray-600 text-center">
