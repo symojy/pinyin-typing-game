@@ -115,7 +115,6 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
         setScore((s) => s + 10);
         setCurrent(getRandomQuestion());
         setCharIndex(0);
-        setPinyinSolvedIndices([]);
       } else {
         setCharIndex((i) => i + 1);
       }
@@ -145,7 +144,6 @@ const handleRestart = () => {
   setInput('');
   setShowToneButtons(false);
   setShake(false);
-  setPinyinSolvedIndices([]);
   setSelectedToneIndex(null);
   setIsToneCorrect(null);
   setTimeLeft(60);
