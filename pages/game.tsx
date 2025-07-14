@@ -91,8 +91,8 @@ const checkPinyin = (value: string) => {
       setShowToneButtons(true);
     }
   } else {
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
+ //     setShake(true);
+ //     setTimeout(() => setShake(false), 500);
     setInput('');
     inputRef.current?.focus();
   }
