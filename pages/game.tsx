@@ -52,6 +52,15 @@ useEffect(() => {
   }
 }, [charIndex]);
 
+useEffect(() => {
+  if (started && timeLeft > 0) {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100); // ← iOS対応のため、少し遅延させる
+  }
+}, [started]);
+
+
 const checkPinyin = (value: string) => {
   const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
 
@@ -220,7 +229,6 @@ useEffect(() => {
     checkPinyin(value);
   }}
   onFocus={handleFocus}
-  autoFocus
   spellCheck={false}
   autoCorrect="off"
   autoCapitalize="off"
