@@ -43,6 +43,15 @@ export default function Game() {
     }
   }, [started, timeLeft]);
 
+useEffect(() => {
+  // iOS対策：声調選択後にフォーカスを確実に戻す
+  if (!showToneButtons && started && timeLeft > 0) {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100); // ← 確実に遅延してから実行（iOSは遅延が重要）
+  }
+}, [charIndex]);
+
 const checkPinyin = (value: string) => {
   const normalizedInput = value.toLowerCase().replace(/v/g, 'ü');
 
@@ -107,11 +116,6 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
       // ✅ 表示更新（トーンボタンを隠す）を先に実行
       setShowToneButtons(false);
 
-      // ✅ 少し遅れて focus（iOS対策）
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-
       setSelectedToneIndex(null);
       setIsToneCorrect(null);
     }, 300);
@@ -123,11 +127,6 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
       setSelectedToneIndex(null);
       setIsToneCorrect(null);
     }, 500);
-
-    // ❗ ミス時も再フォーカスが必要（忘れずに）
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 50);
   }
 }, [expectedTone, charIndex, current]);
 
@@ -171,6 +170,16 @@ const handleRestart = () => {
     if (!started) setStarted(true);
   };
 
+// 下のほうに追加（useEffectの一番下でOK）
+useEffect(() => {
+  if (!showToneButtons && started && timeLeft > 0) {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  }
+}, [charIndex]);
+
+
   return (
     <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start">
       {started && (
@@ -205,7 +214,7 @@ const handleRestart = () => {
   placeholder={!started ? '▶Tap to start' : 'type pinyin'}
   value={input}
   onChange={(e) => {
-    if (showToneButtons) return; // ← ✅ 声調選択中は入力不可にする
+    if (showToneButtons) return; // 入力禁止処理はこちらで
     const value = e.target.value;
     setInput(value);
     checkPinyin(value);
@@ -215,7 +224,6 @@ const handleRestart = () => {
   autoCorrect="off"
   autoCapitalize="off"
   disabled={timeLeft === 0}
-  readOnly={false} // ← ✅ 常に false にする
 />
 
 
