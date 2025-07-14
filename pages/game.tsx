@@ -44,11 +44,11 @@ export default function Game() {
   }, [started, timeLeft]);
 
 useEffect(() => {
-  // iOS対策：声調選択後にフォーカスを確実に戻す
   if (!showToneButtons && started && timeLeft > 0) {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       inputRef.current?.focus();
-    }, 100); // ← 確実に遅延してから実行（iOSは遅延が重要）
+    }, 50);
+    return () => clearTimeout(timer);
   }
 }, [charIndex]);
 
@@ -201,13 +201,12 @@ useEffect(() => {
       </AnimatePresence>
 
 <input
-key="pinyin-input" // ← これで意図しない再生成を防ぐ
+  key="pinyin-input"
   ref={inputRef}
   type="text"
   className={clsx(
     'w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mt-0',
     shake && 'animate-shake',
-    showToneButtons && 'text-green-600 font-bold',
     !started
       ? 'bg-blue-600 text-white font-bold cursor-pointer shadow'
       : 'bg-white border border-gray-400 text-black'
@@ -215,19 +214,17 @@ key="pinyin-input" // ← これで意図しない再生成を防ぐ
   placeholder={!started ? '▶Tap to start' : 'type pinyin'}
   value={input}
   onChange={(e) => {
-    if (showToneButtons) return; // ← ✅ 声調選択中は中身を更新しない
+    if (showToneButtons) return; // 声調中は無視
     const value = e.target.value;
     setInput(value);
     checkPinyin(value);
   }}
   onFocus={handleFocus}
+  autoFocus
   spellCheck={false}
   autoCorrect="off"
   autoCapitalize="off"
-  disabled={false}
-  readOnly={false}
 />
-
 
       {showToneButtons && (
         <div className="mt-2 text-sm text-gray-600 text-center">
