@@ -83,7 +83,6 @@ const checkPinyin = (value: string) => {
         setScore((s) => s + 10);
         setCurrent(getRandomQuestion());
         setCharIndex(0);
-        setPinyinSolvedIndices([]);
       } else {
         setCharIndex((i) => i + 1);
       }
@@ -147,7 +146,6 @@ const handleRestart = () => {
   setShowToneButtons(false);
   setShake(false);
   setPinyinSolvedIndices([]);
-  setGlowingCharIndex(null);
   setSelectedToneIndex(null);
   setIsToneCorrect(null);
   setTimeLeft(60);
