@@ -17,8 +17,8 @@ export default function Game() {
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [shake, setShake] = useState(false);
-  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
-  const [glowingCharIndex, setGlowingCharIndex] = useState<number | null>(null);
+// const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
+// const [glowingCharIndex, setGlowingCharIndex] = useState<number | null>(null);
   const [current, setCurrent] = useState(beginnerQuestions[0]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedToneIndex, setSelectedToneIndex] = useState<number | null>(null);
