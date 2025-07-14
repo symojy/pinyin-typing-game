@@ -186,7 +186,8 @@ useEffect(() => {
 
 
   return (
-    <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start">
+    <main className="relative w-full max-w-md mx-auto h-[800px] flex flex-col items-center justify-start bg-gray-100 overflow-hidden">
+
       {started && (
         <div className="flex justify-between w-full text-lg font-bold mb-4">
           <div>得点: {score}</div>
@@ -195,11 +196,14 @@ useEffect(() => {
       )}
 
       <AnimatePresence mode="wait" initial={false}>
-<WordCard
-  key="wordcard"
-  hanzi={current.hanzi}
-  currentCharIndex={charIndex}
-/>
+<div className="h-[100px] flex items-center justify-center mb-6">
+  <WordCard
+    key="wordcard"
+    hanzi={current.hanzi}
+    currentCharIndex={charIndex}
+  />
+</div>
+
 
       </AnimatePresence>
 
@@ -207,17 +211,11 @@ useEffect(() => {
   key="pinyin-input"
   ref={inputRef}
   type="text"
-  className={clsx(
-    'w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mt-0',
-    shake && 'animate-shake',
-    !started
-      ? 'bg-blue-600 text-white font-bold cursor-pointer shadow'
-      : 'bg-white border border-gray-400 text-black'
-  )}
+  className="fixed bottom-10 left-1/2 -translate-x-1/2 w-48 px-4 py-3 text-lg text-center rounded border border-gray-400 text-black bg-white z-50 shadow"
   placeholder={!started ? '▶Tap to start' : 'type pinyin'}
   value={input}
   onChange={(e) => {
-    if (showToneButtons) return; // 声調中は無視
+    if (showToneButtons) return;
     const value = e.target.value;
     setInput(value);
     checkPinyin(value);
@@ -226,7 +224,10 @@ useEffect(() => {
   spellCheck={false}
   autoCorrect="off"
   autoCapitalize="off"
+  readOnly={false}
+  disabled={false}
 />
+
 
       {showToneButtons && (
         <div className="mt-2 text-sm text-gray-600 text-center">
