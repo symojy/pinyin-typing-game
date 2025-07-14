@@ -191,16 +191,17 @@ useEffect(() => {
 
       <AnimatePresence mode="wait" initial={false}>
         <WordCard
-          key={`q-${score}`}
-          keyId={`q-${score}`}
-          hanzi={current.hanzi}
-          currentCharIndex={charIndex}
-          pinyinSolvedIndices={pinyinSolvedIndices}
-          glowingCharIndex={glowingCharIndex}
+  hanzi={current.hanzi}
+  currentCharIndex={charIndex}
+  pinyinSolvedIndices={pinyinSolvedIndices}
+  glowingCharIndex={glowingCharIndex}
+// ❌ key を score に基づいて変更していた → これを削除 or 固定化
+  key="wordcard"
         />
       </AnimatePresence>
 
 <input
+key="pinyin-input" // ← これで意図しない再生成を防ぐ
   ref={inputRef}
   type="text"
   className={clsx(
