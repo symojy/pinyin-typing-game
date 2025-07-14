@@ -22,7 +22,7 @@ export default function Game() {
   const [current, setCurrent] = useState(beginnerQuestions[0]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedToneIndex, setSelectedToneIndex] = useState<number | null>(null);
-  const [isToneCorrect, setIsToneCorrect] = useState<boolean | null>(null);
+//   const [isToneCorrect, setIsToneCorrect] = useState<boolean | null>(null);
 
 const getRandomQuestion = () => {
   return beginnerQuestions[0]; // ← 毎回 index 0 の問題を使う
@@ -105,7 +105,7 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
   inputRef.current?.blur(); // これはお好みで消してもOK
 
   if (tone === expectedTone) {
-    setIsToneCorrect(true);
+//     setIsToneCorrect(true);
 
     setTimeout(() => {
       const isLastChar = charIndex + 1 >= current.hanzi.length;
@@ -124,15 +124,15 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
       setShowToneButtons(false);
 
       setSelectedToneIndex(null);
-      setIsToneCorrect(null);
+ //      setIsToneCorrect(null);
     }, 300);
   } else {
-    setIsToneCorrect(false);
-    setShake(true);
+ //    setIsToneCorrect(false);
+//     setShake(true);
     setTimeout(() => {
-      setShake(false);
+//       setShake(false);
       setSelectedToneIndex(null);
-      setIsToneCorrect(null);
+//       setIsToneCorrect(null);
     }, 500);
   }
 }, [expectedTone, charIndex, current]);
@@ -142,9 +142,9 @@ const handleRestart = () => {
   setCharIndex(0);
   setInput('');
   setShowToneButtons(false);
-  setShake(false);
+ //  setShake(false);
   setSelectedToneIndex(null);
-  setIsToneCorrect(null);
+ //  setIsToneCorrect(null);
   setTimeLeft(60);
   setCurrent(getRandomQuestion());
   setStarted(false); // ← ここがポイント！
