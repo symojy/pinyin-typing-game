@@ -24,10 +24,9 @@ export default function Game() {
   const [selectedToneIndex, setSelectedToneIndex] = useState<number | null>(null);
   const [isToneCorrect, setIsToneCorrect] = useState<boolean | null>(null);
 
-  const getRandomQuestion = () => {
-    const index = Math.floor(Math.random() * beginnerQuestions.length);
-    return beginnerQuestions[index];
-  };
+const getRandomQuestion = () => {
+  return beginnerQuestions[0]; // ← 毎回 index 0 の問題を使う
+};
 
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
