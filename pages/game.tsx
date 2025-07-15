@@ -180,29 +180,33 @@ export default function Game() {
         disabled={timeLeft === 0}
       />
 
-      {/* 声調ボタン（常に高さ確保） */}
-      <div className="flex justify-center gap-4 h-24">
-        {showToneButtons && started && timeLeft > 0 && (
-          <div className="flex gap-4">
-            {toneSymbols.map((symbol, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <div className="text-xs text-gray-500 mb-1">
-                  {toneLabels[index]}
-                </div>
-                <button
-                  className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 text-3xl font-bold"
-                  onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
-                >
-                  {symbol}
-                </button>
-                <div className="text-xs text-gray-500 mt-1">
-                  ({toneKeys[index]})
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+{/* 声調ボタン（常に表示） */}
+<div className="flex justify-center gap-4 h-24">
+  <div
+    className={clsx(
+      "flex gap-4 transition-opacity duration-300",
+      showToneButtons ? "opacity-100" : "opacity-30 pointer-events-none"
+    )}
+  >
+    {toneSymbols.map((symbol, index) => (
+      <div key={index} className="flex flex-col items-center">
+        <div className="text-xs text-gray-500 mb-1">
+          {toneLabels[index]}
+        </div>
+        <button
+          className="bg-gray-200 px-4 py-2 rounded text-3xl font-bold"
+          onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
+        >
+          {symbol}
+        </button>
+        <div className="text-xs text-gray-500 mt-1">
+          ({toneKeys[index]})
+        </div>
       </div>
+    ))}
+  </div>
+</div>
+
 
       {/* 終了メッセージ */}
       {timeLeft === 0 && (
