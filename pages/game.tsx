@@ -1,45 +1,33 @@
 import { useEffect, useState, useRef } from 'react';
 import clsx from 'clsx';
-
-const questions = [
-  { hanzi: ['熊', '猫'], pinyin: ['xiong', 'mao'], tones: [2, 1] },
-  { hanzi: ['手', '机'], pinyin: ['shou', 'ji'], tones: [3, 1] },
-  { hanzi: ['你', '好'], pinyin: ['ni', 'hao'], tones: [3, 3] },
-  { hanzi: ['朋', '友'], pinyin: ['peng', 'you'], tones: [2, 3] },
-  { hanzi: ['老', '师'], pinyin: ['lao', 'shi'], tones: [3, 1] },
-  { hanzi: ['学', '生'], pinyin: ['xue', 'sheng'], tones: [2, 1] },
-  { hanzi: ['电', '脑'], pinyin: ['dian', 'nao'], tones: [4, 3] },
-  { hanzi: ['天', '气'], pinyin: ['tian', 'qi'], tones: [1, 4] },
-  { hanzi: ['喜', '欢'], pinyin: ['xi', 'huan'], tones: [3, 1] },
-  { hanzi: ['汉', '语'], pinyin: ['han', 'yu'], tones: [4, 3] },
-  { hanzi: ['苹', '果'], pinyin: ['ping', 'guo'], tones: [2, 3] },
-  { hanzi: ['谢', '谢'], pinyin: ['xie', 'xie'], tones: [4, 4] },
-  { hanzi: ['再', '见'], pinyin: ['zai', 'jian'], tones: [4, 4] },
-  { hanzi: ['三', '明', '治'], pinyin: ['san', 'ming', 'zhi'], tones: [1, 2, 4] },
-  { hanzi: ['图', '书', '馆'], pinyin: ['tu', 'shu', 'guan'], tones: [2, 1, 3] },
-  { hanzi: ['美', '国'], pinyin: ['mei', 'guo'], tones: [3, 2] },
-  { hanzi: ['中', '国'], pinyin: ['zhong', 'guo'], tones: [1, 2] },
-  { hanzi: ['上', '海'], pinyin: ['shang', 'hai'], tones: [4, 3] },
-  { hanzi: ['北', '京'], pinyin: ['bei', 'jing'], tones: [3, 1] },
-];
+import questions from '../data/questions-beginner.json';
 
 const toneSymbols = ['—', '／', '∨', '＼'];
 const toneKeys = ['u', 'i', 'o', 'p'];
 const toneLabels = ['第一声', '第二声', '第三声', '第四声'];
 
+function shuffleArray<T>(array: T[]): T[] {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
 export default function Game() {
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
+  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
   const [shake, setShake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const current = questions[currentIndex % questions.length];
+const [remainingQuestions, setRemainingQuestions] = useState(() =>
+  shuffleArray(questions)
+);
+
+const [current, setCurrent] = useState(() => remainingQuestions[0]);
+
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
 
@@ -49,6 +37,20 @@ export default function Game() {
     }
   };
 
+const goToNextQuestion = () => {
+  setRemainingQuestions((prev) => {
+    const next = prev.slice(1);
+    if (next.length > 0) {
+      setCurrent(next[0]);
+    } else {
+      // 終了処理（とりあえずスコア表示画面に任せる）
+      setTimeLeft(0); // タイマー終了と同じ扱いにする
+    }
+    return next;
+  });
+};
+
+
   useEffect(() => {
     if (started && timeLeft > 0) {
       const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
@@ -56,24 +58,43 @@ export default function Game() {
     }
   }, [started, timeLeft]);
 
-  useEffect(() => {
-    if (
-      input.length >= expectedPinyin.length &&
-      !showToneButtons &&
-      timeLeft > 0
-    ) {
-      if (input.toLowerCase() === expectedPinyin) {
-        setShowToneButtons(true);
-        setShowCorrectIcon(true);
-        setTimeout(() => setShowCorrectIcon(false), 500);
-      } else {
-        setShake(true);
-        setTimeout(() => setShake(false), 500);
-        setInput('');
+useEffect(() => {
+  if (
+    input.length >= expectedPinyin.length &&
+    !showToneButtons &&
+    timeLeft > 0
+  ) {
+    if (input.toLowerCase() === expectedPinyin) {
+      setShowCorrectIcon(true);
+      setTimeout(() => setShowCorrectIcon(false), 300);
+
+      if (expectedTone === 0) {
+        // 軽声 → 自動正解で次に進む
+        const isLastChar = charIndex + 1 >= current.hanzi.length;
+        if (isLastChar) {
+          setScore((s) => s + 10);
+          setCharIndex(0);
+          setPinyinSolvedIndices([]);
+          setInput('');
+          goToNextQuestion();
+        } else {
+          setCharIndex((i) => i + 1);
+          setInput('');
+        }
         inputRef.current?.focus();
+      } else {
+        // 普通の声調 → ボタン表示
+        setShowToneButtons(true);
       }
+    } else {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      setInput('');
+      inputRef.current?.focus();
     }
-  }, [input, expectedPinyin, showToneButtons, timeLeft]);
+  }
+}, [input, expectedPinyin, showToneButtons, timeLeft]);
+
 
   const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
     if (tone === expectedTone) {
@@ -83,9 +104,13 @@ export default function Game() {
       const isLastChar = charIndex + 1 >= current.hanzi.length;
 
       if (isLastChar) {
-        setScore((s) => s + 10);
-        setCurrentIndex((i) => i + 1);
-        setCharIndex(0);
+  setScore((s) => s + 10);
+  setCharIndex(0);
+  setPinyinSolvedIndices([]);
+  setInput('');
+  setShowToneButtons(false);
+  goToNextQuestion();
+  inputRef.current?.focus();
       } else {
         setCharIndex((i) => i + 1);
       }
