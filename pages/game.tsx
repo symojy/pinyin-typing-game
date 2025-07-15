@@ -15,7 +15,6 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
-  const [_, setPinyinSolvedIndices] = useState<number[]>([]); // ← これ追加
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
@@ -74,7 +73,6 @@ useEffect(() => {
         if (isLastChar) {
           setScore((s) => s + 10);
           setCharIndex(0);
-          setPinyinSolvedIndices([]);
           setInput('');
           goToNextQuestion();
         } else {
