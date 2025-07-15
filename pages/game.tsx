@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import clsx from 'clsx';
 import questions from '../data/questions-beginner.json';
 
@@ -15,7 +15,7 @@ export default function Game() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
-  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
+  const [_, setPinyinSolvedIndices] = useState<number[]>([]); // ← これ追加
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [showCorrectIcon, setShowCorrectIcon] = useState(false);
@@ -93,37 +93,37 @@ useEffect(() => {
       inputRef.current?.focus();
     }
   }
-}, [input, expectedPinyin, showToneButtons, timeLeft]);
+}, [input, expectedPinyin, expectedTone, charIndex, current.hanzi.length, showToneButtons, timeLeft]);
 
 
-  const handleToneSelect = (tone: 1 | 2 | 3 | 4) => {
-    if (tone === expectedTone) {
-      setShowCorrectIcon(true);
-      setTimeout(() => setShowCorrectIcon(false), 500);
+const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
+  if (tone === expectedTone) {
+    setShowCorrectIcon(true);
+    setTimeout(() => setShowCorrectIcon(false), 500);
 
-      const isLastChar = charIndex + 1 >= current.hanzi.length;
+    const isLastChar = charIndex + 1 >= current.hanzi.length;
 
-      if (isLastChar) {
-  setScore((s) => s + 10);
-  setCharIndex(0);
-  setPinyinSolvedIndices([]);
-  setInput('');
-  setShowToneButtons(false);
-  goToNextQuestion();
-  inputRef.current?.focus();
-      } else {
-        setCharIndex((i) => i + 1);
-      }
-
+    if (isLastChar) {
+      setScore((s) => s + 10);
+      setCharIndex(0);
       setInput('');
       setShowToneButtons(false);
+      goToNextQuestion();
       inputRef.current?.focus();
     } else {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      inputRef.current?.focus();
+      setCharIndex((i) => i + 1);
     }
-  };
+
+    setInput('');
+    setShowToneButtons(false);
+    inputRef.current?.focus();
+  } else {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+    inputRef.current?.focus();
+  }
+}, [expectedTone, charIndex, current.hanzi.length]);
+
 
 useEffect(() => {
   const handleKey = (e: KeyboardEvent) => {
@@ -151,7 +151,7 @@ useEffect(() => {
 
   window.addEventListener('keydown', handleKey);
   return () => window.removeEventListener('keydown', handleKey);
-}, [showToneButtons]);
+}, [showToneButtons, handleToneSelect]);
 
 
   return (
