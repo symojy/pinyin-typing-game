@@ -100,24 +100,34 @@ export default function Game() {
     }
   };
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (!showToneButtons) return;
-      const key = e.key.toLowerCase();
-      let tone: 1 | 2 | 3 | 4 | null = null;
-      if (key === 'u') tone = 1;
-      else if (key === 'i') tone = 2;
-      else if (key === 'o') tone = 3;
-      else if (key === 'p') tone = 4;
+useEffect(() => {
+  const handleKey = (e: KeyboardEvent) => {
+    if (!showToneButtons) return;
 
-      if (tone) {
-        e.preventDefault();
-        handleToneSelect(tone);
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [showToneButtons]);
+    const key = e.key.toLowerCase();
+    let tone: 1 | 2 | 3 | 4 | null = null;
+
+    if (key === 'u') tone = 1;
+    else if (key === 'i') tone = 2;
+    else if (key === 'o') tone = 3;
+    else if (key === 'p') tone = 4;
+
+    if (tone) {
+      e.preventDefault(); // キー入力を抑止
+      handleToneSelect(tone);
+    } else {
+      // u/i/o/p 以外は完全に抑止（入力欄に文字を残さない）
+      e.preventDefault();
+    }
+
+    // 入力欄を再フォーカス（キーボードが閉じないように）
+    inputRef.current?.focus();
+  };
+
+  window.addEventListener('keydown', handleKey);
+  return () => window.removeEventListener('keydown', handleKey);
+}, [showToneButtons]);
+
 
   return (
     <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-center">
