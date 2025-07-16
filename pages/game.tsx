@@ -32,6 +32,14 @@ export default function Game() {
     if (!started) setStarted(true);
   };
 
+  const handleSkip = () => {
+  setCharIndex(0);
+  setInput('');
+  setShowToneButtons(false);
+  goToNextQuestion();
+  inputRef.current?.focus();
+};
+
   const goToNextQuestion = () => {
     setRemainingQuestions((prev) => {
       const next = prev.slice(1);
@@ -159,26 +167,39 @@ export default function Game() {
         </>
       )}
 
-      {/* ピンイン入力欄 */}
-      <input
-        ref={inputRef}
-        type="text"
-        className={clsx(
-          "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300 mb-4",
-          shake && "animate-shake",
-          !started
-            ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
-            : "bg-white border border-gray-400 text-black"
-        )}
-        placeholder={!started ? "▶Tap to start" : "type pinyin"}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onFocus={handleFocus}
-        spellCheck={false}
-        autoCorrect="off"
-        autoCapitalize="off"
-        disabled={timeLeft === 0}
-      />
+{/* ピンイン入力欄 + スキップボタン */}
+<div className="relative mb-4 h-14 flex justify-center items-center">
+  {/* 入力欄 */}
+  <input
+    ref={inputRef}
+    type="text"
+    className={clsx(
+      "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300",
+      shake && "animate-shake",
+      !started
+        ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
+        : "bg-white border border-gray-400 text-black"
+    )}
+    placeholder={!started ? "▶Tap to start" : "Type Pinyin"}
+    value={input}
+    onChange={(e) => setInput(e.target.value)}
+    onFocus={handleFocus}
+    spellCheck={false}
+    autoCorrect="off"
+    autoCapitalize="off"
+    disabled={timeLeft === 0}
+  />
+
+  {/* スキップボタン（絶対位置で右側に） */}
+  <button
+    onClick={handleSkip}
+    className="absolute right-[calc(50%-6rem)] translate-x-15 border border-gray-400 rounded px-4 py-3 text-lg font-bold"
+    disabled={timeLeft === 0}
+  >
+    ⏩
+  </button>
+</div>
+
 
 {/* 声調ボタン（常に表示） */}
 <div className="flex justify-center gap-4 h-24">
