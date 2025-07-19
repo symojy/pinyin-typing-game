@@ -173,6 +173,7 @@ export default function Game() {
 <input
   ref={inputRef}
   type="text"
+  inputMode="latin"
   className={clsx(
     "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
     shake && "animate-shake",
@@ -180,12 +181,12 @@ export default function Game() {
     !started
       ? "bg-blue-600 text-white text-lg font-bold cursor-pointer shadow"
       : [
-          "bg-white",
+          "bg-gray-50",
           "text-xl", // ← サイズUP
-          showToneButtons ? "border-gray-300" : "border-green-500"
+          showToneButtons ? "border-gray-300" : "border-green-400"
         ]
   )}
-  placeholder={!started ? "▶Tap to start" : "Type Pinyin"}
+  placeholder={!started ? "Tap to start" : "Type pinyin"}
   value={input}
   onChange={(e) => setInput(e.target.value)}
   onFocus={handleFocus}
@@ -231,9 +232,10 @@ export default function Game() {
     {/* ボタン本体 */}
     <button
       className={clsx(
-        "px-4 py-2 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
+    "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
+    "flex items-center justify-center", // 記号を中央に配置
         showToneButtons
-          ? "border-green-500 bg-white text-black"
+          ? "border-green-400 bg-white text-black"
           : "border-gray-300 bg-gray-100 text-gray-400"
       )}
       onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
