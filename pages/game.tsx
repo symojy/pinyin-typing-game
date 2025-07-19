@@ -170,34 +170,41 @@ export default function Game() {
 {/* ピンイン入力欄 + スキップボタン */}
 <div className="relative mb-4 h-14 flex justify-center items-center">
   {/* 入力欄 */}
-  <input
-    ref={inputRef}
-    type="text"
-    className={clsx(
-      "w-48 px-4 py-3 text-lg text-center rounded transition-all duration-300",
-      shake && "animate-shake",
-      !started
-        ? "bg-blue-600 text-white font-bold cursor-pointer shadow"
-        : "bg-white border border-gray-400 text-black"
-    )}
-    placeholder={!started ? "▶Tap to start" : "Type Pinyin"}
-    value={input}
-    onChange={(e) => setInput(e.target.value)}
-    onFocus={handleFocus}
-    spellCheck={false}
-    autoCorrect="off"
-    autoCapitalize="off"
-    disabled={timeLeft === 0}
-  />
+<input
+  ref={inputRef}
+  type="text"
+  className={clsx(
+    "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
+    shake && "animate-shake",
+    showToneButtons ? "text-gray-400" : "text-black", // ← 文字色切替
+    !started
+      ? "bg-blue-600 text-white text-lg font-bold cursor-pointer shadow"
+      : [
+          "bg-white",
+          "text-xl", // ← サイズUP
+          showToneButtons ? "border-gray-300" : "border-green-500"
+        ]
+  )}
+  placeholder={!started ? "▶Tap to start" : "Type Pinyin"}
+  value={input}
+  onChange={(e) => setInput(e.target.value)}
+  onFocus={handleFocus}
+  spellCheck={false}
+  autoCorrect="off"
+  autoCapitalize="off"
+  disabled={timeLeft === 0}
+/>
+
 
   {/* スキップボタン（絶対位置で右側に） */}
-  <button
-    onClick={handleSkip}
-    className="absolute right-[calc(50%-6rem)] translate-x-15 border border-gray-400 rounded px-4 py-3 text-lg font-bold"
-    disabled={timeLeft === 0}
-  >
-    ⏩
-  </button>
+<button
+  onClick={handleSkip}
+  className="absolute right-[calc(50%-6rem)] translate-x-15 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
+  disabled={timeLeft === 0}
+>
+  ⏩
+</button>
+
 </div>
 
 
@@ -209,22 +216,43 @@ export default function Game() {
       showToneButtons ? "opacity-100" : "opacity-30 pointer-events-none"
     )}
   >
-    {toneSymbols.map((symbol, index) => (
-      <div key={index} className="flex flex-col items-center">
-        <div className="text-xs text-gray-500 mb-1">
-          {toneLabels[index]}
-        </div>
-        <button
-          className="bg-gray-200 px-4 py-2 rounded text-3xl font-bold"
-          onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
-        >
-          {symbol}
-        </button>
-        <div className="text-xs text-gray-500 mt-1">
-          ({toneKeys[index]})
-        </div>
-      </div>
-    ))}
+{toneSymbols.map((symbol, index) => (
+  <div key={index} className="flex flex-col items-center">
+    {/* 上ラベル */}
+    <div
+      className={clsx(
+        "text-xs mb-1 transition-colors",
+        showToneButtons ? "text-black" : "text-gray-400"
+      )}
+    >
+      {toneLabels[index]}
+    </div>
+
+    {/* ボタン本体 */}
+    <button
+      className={clsx(
+        "px-4 py-2 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
+        showToneButtons
+          ? "border-green-500 bg-white text-black"
+          : "border-gray-300 bg-gray-100 text-gray-400"
+      )}
+      onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
+    >
+      {symbol}
+    </button>
+
+    {/* キー表示 */}
+    <div
+      className={clsx(
+        "text-xs mt-1 transition-colors",
+        showToneButtons ? "text-black" : "text-gray-400"
+      )}
+    >
+      ({toneKeys[index]})
+    </div>
+  </div>
+))}
+
   </div>
 </div>
 
