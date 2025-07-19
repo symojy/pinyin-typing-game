@@ -34,22 +34,21 @@ html, body {
 }
 
 @layer utilities {
-  @keyframes score-down {
-    0% {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
-    30% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(8px);
-    }
+@keyframes score-left {
+  0% {
+    opacity: 0;
+    transform: translateX(25px);
   }
-
-  .animate-score-down {
-    animation: score-down 0.6s ease-out;
+  50% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+}
+  .animate-score-left {
+    animation: score-left 1.2s ease-out;
   }
 }

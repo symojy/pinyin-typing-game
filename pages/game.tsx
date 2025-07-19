@@ -166,7 +166,7 @@ return (
           className={clsx(
             "h-full transition-all duration-100",
             timeLeft > 20
-              ? "bg-green-500"
+              ? "bg-green-300"
               : timeLeft > 10
               ? "bg-yellow-400"
               : "bg-red-500"
@@ -182,16 +182,15 @@ return (
     <>
 <div className="relative min-h-[2.5rem]">
   <div>{score} pt</div>
-  <div
-    className={clsx(
-      "absolute left-0 top-full mt-1 text-green-500 text-sm transition-opacity duration-100",
-      showScoreUp ? "animate-score-down opacity-100" : "opacity-0"
-    )}
-  >
-    +10 pt
-  </div>
+ <div
+  className={clsx(
+    "absolute left-full ml-2 top-0 text-green-500 text-m transition-opacity duration-100 whitespace-nowrap",
+    showScoreUp ? "animate-score-left opacity-0" : "opacity-0"
+  )}
+>
+  +10 pt
 </div>
-
+</div>
 
       <div>⏱️ {timeLeft}</div>
     </>
@@ -204,21 +203,32 @@ return (
 </div>
 
     {/* 漢字表示エリア（常に高さを確保） */}
-    <div className="flex justify-center gap-4 text-3xl mb-6 min-h-[48px] h-12 items-center">
-      {started && timeLeft > 0 &&
-        current.hanzi.map((char, i) => (
-          <span
-            key={i}
-            className={clsx(
-              i === charIndex
-                ? 'underline decoration-2 underline-offset-8'
-                : ''
-            )}
-          >
-            {char}
-          </span>
-        ))}
-    </div>
+<div className="flex justify-center gap-4 mb-6 min-h-[64px] h-16 items-end">
+  {started && timeLeft > 0 &&
+    current.hanzi.map((char, i) => {
+      const isCurrent = i === charIndex;
+      const isSolved = i < charIndex;
+
+      return (
+        <span
+          key={i}
+          className={clsx(
+            "flex items-center justify-center rounded-xl border-2 transition-all duration-300",
+            isCurrent
+              ? "w-16 h-16 text-4xl font-bold border-blue-400"
+              : "w-14 h-14 text-2xl",
+            isSolved
+              ? "bg-green-100 border-green-400"
+              : !isCurrent && "border-gray-300 text-gray-700"
+          )}
+        >
+          {char}
+        </span>
+      );
+    })}
+</div>
+
+
 
     {/* ピンイン入力欄 + スキップボタン（常に高さ固定） */}
     <div className="relative mb-4 h-14 flex justify-center items-center">
