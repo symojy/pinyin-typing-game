@@ -15,6 +15,7 @@ export default function Game() {
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const [score, setScore] = useState(0);
+  const [showScoreUp, setShowScoreUp] = useState(false);
   const [charIndex, setCharIndex] = useState(0);
   const [input, setInput] = useState('');
   const [showToneButtons, setShowToneButtons] = useState(false);
@@ -71,6 +72,8 @@ export default function Game() {
           const isLastChar = charIndex + 1 >= current.hanzi.length;
           if (isLastChar) {
             setScore((s) => s + 10);
+            setShowScoreUp(true);
+            setTimeout(() => setShowScoreUp(false), 700);
             setCharIndex(0);
             setInput('');
             goToNextQuestion();
@@ -95,12 +98,14 @@ export default function Game() {
     if (tone === expectedTone) {
       const isLastChar = charIndex + 1 >= current.hanzi.length;
       if (isLastChar) {
-        setScore((s) => s + 10);
-        setCharIndex(0);
-        setInput('');
-        setShowToneButtons(false);
-        goToNextQuestion();
-        inputRef.current?.focus();
+  setScore((s) => s + 10);
+  setShowScoreUp(true);
+  setTimeout(() => setShowScoreUp(false), 700);
+  setCharIndex(0);
+  setInput('');
+  setShowToneButtons(false);
+  goToNextQuestion();
+  inputRef.current?.focus();
       } else {
         setCharIndex((i) => i + 1);
       }
@@ -139,6 +144,11 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [showToneButtons, handleToneSelect]);
 
+
+useEffect(() => {
+  console.log("showScoreUp", showScoreUp);
+}, [showScoreUp]);
+
 return (
   <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-15 overflow-hidden">
 
@@ -170,8 +180,20 @@ return (
 <div className="w-full max-w-md mx-auto text-lg font-bold mt-1 mb-2 flex justify-between h-6">
   {started ? (
     <>
-      <div>得点: {score}</div>
-      <div>残り: {timeLeft}s</div>
+<div className="relative min-h-[2.5rem]">
+  <div>{score} pt</div>
+  <div
+    className={clsx(
+      "absolute left-0 top-full mt-1 text-green-500 text-sm transition-opacity duration-100",
+      showScoreUp ? "animate-score-down opacity-100" : "opacity-0"
+    )}
+  >
+    +10 pt
+  </div>
+</div>
+
+
+      <div>⏱️ {timeLeft}</div>
     </>
   ) : (
     <>
