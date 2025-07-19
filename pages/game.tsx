@@ -140,10 +140,11 @@ export default function Game() {
   }, [showToneButtons, handleToneSelect]);
 
 return (
-  <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-20">
+  <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-15 overflow-hidden">
+
 
     {/* 最上部の固定タイトル＆時間バー */}
-    <div className="fixed top-0 left-0 w-full z-50">
+    <div className="fixed top-0 left-0 w-full z-50 bg-white">
       {/* タイトル */}
       <div className="bg-white text-center font-bold text-lg py-2 border-b border-gray-300">
         拼音师傅🥋PINYIN MASTER

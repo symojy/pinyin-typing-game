@@ -28,3 +28,8 @@ body {
 .animate-shake {
   animation: shake 0.4s ease;
 }
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
