@@ -140,7 +140,8 @@ export default function Game() {
   }, [showToneButtons, handleToneSelect]);
 
 return (
-  <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start pt-14">
+  <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-20">
+
     {/* 最上部の固定タイトル＆時間バー */}
     <div className="fixed top-0 left-0 w-full z-50">
       {/* タイトル */}
@@ -164,13 +165,20 @@ return (
       </div>
     </div>
 
-    {/* スコア表示（ゲーム中のみ） */}
-    {started && (
-      <div className="flex justify-between w-full text-lg font-bold mt-1 mb-2">
-        <div>得点: {score}</div>
-        <div>残り: {timeLeft}s</div>
-      </div>
-    )}
+{/* 得点と残り時間（常に高さを確保） */}
+<div className="w-full max-w-md mx-auto text-lg font-bold mt-1 mb-2 flex justify-between h-6">
+  {started ? (
+    <>
+      <div>得点: {score}</div>
+      <div>残り: {timeLeft}s</div>
+    </>
+  ) : (
+    <>
+      <div>&nbsp;</div>
+      <div>&nbsp;</div>
+    </>
+  )}
+</div>
 
     {/* 漢字表示エリア（常に高さを確保） */}
     <div className="flex justify-center gap-4 text-3xl mb-6 min-h-[48px] h-12 items-center">
