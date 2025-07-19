@@ -21,7 +21,14 @@ export default function Game() {
   const [showToneButtons, setShowToneButtons] = useState(false);
   const [shake, setShake] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+const positionMap = {
+  1: ["left-1/2 -translate-x-1/2"],
+  2: ["left-1/2 -translate-x-[56%]", "left-1/2 translate-x-[56%]"],
+  3: ["left-[0%]", "left-1/2 -translate-x-1/2", "left-[95%] -translate-x-ful"],
+};
 
+  const [hoppingIndex, setHoppingIndex] = useState<number | null>(null);
+ 
   const [remainingQuestions, setRemainingQuestions] = useState(() =>
     shuffleArray(questions)
   );
@@ -61,14 +68,19 @@ export default function Game() {
     }
   }, [started, timeLeft]);
 
-  useEffect(() => {
-    if (
-      input.length >= expectedPinyin.length &&
-      !showToneButtons &&
-      timeLeft > 0
-    ) {
-      if (input.toLowerCase() === expectedPinyin) {
-        if (expectedTone === 0) {
+useEffect(() => {
+  if (
+    input.length >= expectedPinyin.length &&
+    !showToneButtons &&
+    timeLeft > 0
+  ) {
+    if (input.toLowerCase() === expectedPinyin) {
+      if (expectedTone === 0) {
+        // ✅ 軽声ならジャンプ → 処理を遅らせる
+        setHoppingIndex(charIndex);
+        setTimeout(() => {
+          setHoppingIndex(null);
+
           const isLastChar = charIndex + 1 >= current.hanzi.length;
           if (isLastChar) {
             setScore((s) => s + 10);
@@ -82,42 +94,58 @@ export default function Game() {
             setInput('');
           }
           inputRef.current?.focus();
-        } else {
-          setShowToneButtons(true);
-        }
+        }, 400); // アニメーション終了後に進める
       } else {
-        setShake(true);
-        setTimeout(() => setShake(false), 500);
-        setInput('');
-        inputRef.current?.focus();
+        setShowToneButtons(true);
       }
-    }
-  }, [input, expectedPinyin, expectedTone, charIndex, current.hanzi.length, showToneButtons, timeLeft]);
-
-  const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
-    if (tone === expectedTone) {
-      const isLastChar = charIndex + 1 >= current.hanzi.length;
-      if (isLastChar) {
-  setScore((s) => s + 10);
-  setShowScoreUp(true);
-  setTimeout(() => setShowScoreUp(false), 700);
-  setCharIndex(0);
-  setInput('');
-  setShowToneButtons(false);
-  goToNextQuestion();
-  inputRef.current?.focus();
-      } else {
-        setCharIndex((i) => i + 1);
-      }
-      setInput('');
-      setShowToneButtons(false);
-      inputRef.current?.focus();
     } else {
       setShake(true);
       setTimeout(() => setShake(false), 500);
+      setInput('');
       inputRef.current?.focus();
     }
-  }, [expectedTone, charIndex, current.hanzi.length]);
+  }
+}, [
+  input,
+  expectedPinyin,
+  expectedTone,
+  charIndex,
+  current.hanzi.length,
+  showToneButtons,
+  timeLeft,
+]);
+
+
+const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
+  if (tone === expectedTone) {
+    setHoppingIndex(charIndex); // ✅ 声調正解 → ジャンプ開始
+    setTimeout(() => {
+      setHoppingIndex(null);
+
+      const isLastChar = charIndex + 1 >= current.hanzi.length;
+      if (isLastChar) {
+        setScore((s) => s + 10);
+        setShowScoreUp(true);
+        setTimeout(() => setShowScoreUp(false), 700);
+        setCharIndex(0);
+        setInput('');
+        setShowToneButtons(false);
+        goToNextQuestion();
+        inputRef.current?.focus();
+      } else {
+        setCharIndex((i) => i + 1);
+        setInput('');
+        setShowToneButtons(false);
+        inputRef.current?.focus();
+      }
+    }, 400); // ✅ アニメーション表示後に進行
+  } else {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+    inputRef.current?.focus();
+  }
+}, [expectedTone, charIndex, current.hanzi.length]);
+
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -203,32 +231,46 @@ return (
 </div>
 
     {/* 漢字表示エリア（常に高さを確保） */}
-<div className="flex justify-center gap-4 mb-6 min-h-[64px] h-16 items-end">
+<div className="relative w-48 h-16 mb-6">
   {started && timeLeft > 0 &&
     current.hanzi.map((char, i) => {
       const isCurrent = i === charIndex;
       const isSolved = i < charIndex;
 
+      // 文字数ごとの位置指定（中心基準）
+      const positionMap = {
+        1: ["left-1/2 -translate-x-1/2"],
+        2: ["left-[15%]", "left-[55%]"],
+        3: ["left-[0%]", "left-[37%]", "left-[70%]"],
+      };
+      const positionClass = positionMap[current.hanzi.length]?.[i] ?? "";
+
       return (
 <span
   key={i}
   className={clsx(
-    "flex items-center justify-center rounded-xl transition-all duration-300",
-    "border border-t-2 border-l-2 border-r-2 border-b-6", // 下だけ太く
+    "absolute bottom-0 flex items-center justify-center rounded-xl transition-all duration-300", // ✅ items-center に修正
+    isCurrent || isSolved ? "w-16 h-16 text-4xl" : "w-14 h-14 text-2xl",
     isCurrent
-      ? "w-16 h-16 text-4xl font-bold border-blue-300"
-      : "w-14 h-14 text-2xl",
-    isSolved
+      ? "font-bold border-blue-300"
+      : isSolved
       ? "bg-green-100 border-green-400"
-      : !isCurrent && "border-gray-300 text-gray-500"
+      : "border-gray-300 text-gray-500",
+    "border border-t-2 border-l-2 border-r-2 border-b-6",
+    i === hoppingIndex && "animate-hop",
+    positionClass
   )}
 >
   {char}
 </span>
 
+
+
+
       );
     })}
 </div>
+
 
 
 

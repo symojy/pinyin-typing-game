@@ -51,4 +51,21 @@ html, body {
   .animate-score-left {
     animation: score-left 1.2s ease-out;
   }
+@keyframes hop {
+  0% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-12%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-hop {
+  animation: hop 0.4s ease-out;
+}
+
+
 }
