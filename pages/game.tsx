@@ -173,7 +173,6 @@ export default function Game() {
 <input
   ref={inputRef}
   type="text"
-  inputMode="latin"
   className={clsx(
     "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
     shake && "animate-shake",
