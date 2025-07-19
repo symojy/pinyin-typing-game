@@ -23,8 +23,8 @@ export default function Game() {
   const inputRef = useRef<HTMLInputElement>(null);
 const positionMap = {
   1: ["left-1/2 -translate-x-1/2"],
-  2: ["left-1/2 -translate-x-[56%]", "left-1/2 translate-x-[56%]"],
-  3: ["left-[0%]", "left-1/2 -translate-x-1/2", "left-[95%] -translate-x-ful"],
+  2: ["left-[17%]", "left-[56%]"],
+  3: ["left-[0%]", "left-[38%]", "left-[77%]"],
 };
 
   const [hoppingIndex, setHoppingIndex] = useState<number | null>(null);
@@ -237,12 +237,6 @@ return (
       const isCurrent = i === charIndex;
       const isSolved = i < charIndex;
 
-      // 文字数ごとの位置指定（中心基準）
-      const positionMap = {
-        1: ["left-1/2 -translate-x-1/2"],
-        2: ["left-[15%]", "left-[55%]"],
-        3: ["left-[0%]", "left-[37%]", "left-[70%]"],
-      };
       const positionClass = positionMap[current.hanzi.length]?.[i] ?? "";
 
       return (
