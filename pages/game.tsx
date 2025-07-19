@@ -210,20 +210,22 @@ return (
       const isSolved = i < charIndex;
 
       return (
-        <span
-          key={i}
-          className={clsx(
-            "flex items-center justify-center rounded-xl border-2 transition-all duration-300",
-            isCurrent
-              ? "w-16 h-16 text-4xl font-bold border-blue-400"
-              : "w-14 h-14 text-2xl",
-            isSolved
-              ? "bg-green-100 border-green-400"
-              : !isCurrent && "border-gray-300 text-gray-700"
-          )}
-        >
-          {char}
-        </span>
+<span
+  key={i}
+  className={clsx(
+    "flex items-center justify-center rounded-xl transition-all duration-300",
+    "border border-t-2 border-l-2 border-r-2 border-b-6", // 下だけ太く
+    isCurrent
+      ? "w-16 h-16 text-4xl font-bold border-blue-300"
+      : "w-14 h-14 text-2xl",
+    isSolved
+      ? "bg-green-100 border-green-400"
+      : !isCurrent && "border-gray-300 text-gray-500"
+  )}
+>
+  {char}
+</span>
+
       );
     })}
 </div>
@@ -244,7 +246,7 @@ return (
             : [
                 "bg-gray-50",
                 "text-xl",
-                showToneButtons ? "border-gray-300" : "border-green-400"
+                showToneButtons ? "border-gray-300" : "border-blue-300"
               ]
         )}
         placeholder={!started ? "Tap to start" : "Type pinyin"}
@@ -293,7 +295,7 @@ return (
                 "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
                 "flex items-center justify-center",
                 showToneButtons
-                  ? "border-green-400 bg-white text-black"
+                  ? "border-blue-300 bg-white text-black"
                   : "border-gray-300 bg-gray-100 text-gray-400"
               )}
               onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
