@@ -5,6 +5,7 @@ import questions from '../data/questions-beginner.json';
 const toneSymbols = ['—', '／', '∨', '＼'];
 const toneKeys = ['u', 'i', 'o', 'p'];
 const toneLabels = ['第一声', '第二声', '第三声', '第四声'];
+const MAX_TIME = 60; // 最大制限時間（秒）
 
 function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
@@ -138,133 +139,153 @@ export default function Game() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [showToneButtons, handleToneSelect]);
 
-  return (
-    <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start pt-6">
-      {started && (
-        <>
-          {/* スコア表示 */}
-          <div className="flex justify-between w-full text-lg font-bold mb-4">
-            <div>得点: {score}</div>
-            <div>残り: {timeLeft}s</div>
-          </div>
+return (
+  <main className="p-4 max-w-md mx-auto min-h-screen flex flex-col items-center justify-start pt-14">
+    {/* 最上部の固定タイトル＆時間バー */}
+    <div className="fixed top-0 left-0 w-full z-50">
+      {/* タイトル */}
+      <div className="bg-white text-center font-bold text-lg py-2 border-b border-gray-300">
+        拼音师傅🥋PINYIN MASTER
+      </div>
 
-          {/* 漢字表示：高さ固定 */}
-          <div className="flex justify-center gap-4 text-3xl mb-6 min-h-[48px]">
-            {timeLeft > 0 &&
-              current.hanzi.map((char, i) => (
-                <span
-                  key={i}
-                  className={clsx(
-                    i === charIndex
-                      ? 'underline decoration-2 underline-offset-8'
-                      : ''
-                  )}
-                >
-                  {char}
-                </span>
-              ))}
-          </div>
-        </>
-      )}
+      {/* タイムバー */}
+      <div className="w-full h-2 bg-gray-300 mb-1">
+        <div
+          className={clsx(
+            "h-full transition-all duration-100",
+            timeLeft > 20
+              ? "bg-green-500"
+              : timeLeft > 10
+              ? "bg-yellow-400"
+              : "bg-red-500"
+          )}
+          style={{ width: `${(timeLeft / MAX_TIME) * 100}%` }}
+        ></div>
+      </div>
+    </div>
 
-{/* ピンイン入力欄 + スキップボタン */}
-<div className="relative mb-4 h-14 flex justify-center items-center">
-  {/* 入力欄 */}
-<input
-  ref={inputRef}
-  type="text"
-  className={clsx(
-    "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
-    shake && "animate-shake",
-    showToneButtons ? "text-gray-400" : "text-black", // ← 文字色切替
-    !started
-      ? "bg-blue-600 text-white text-lg font-bold cursor-pointer shadow"
-      : [
-          "bg-gray-50",
-          "text-xl", // ← サイズUP
-          showToneButtons ? "border-gray-300" : "border-green-400"
-        ]
-  )}
-  placeholder={!started ? "Tap to start" : "Type pinyin"}
-  value={input}
-  onChange={(e) => setInput(e.target.value)}
-  onFocus={handleFocus}
-  spellCheck={false}
-  autoCorrect="off"
-  autoCapitalize="off"
-  disabled={timeLeft === 0}
-/>
-
-
-  {/* スキップボタン（絶対位置で右側に） */}
-<button
-  onClick={handleSkip}
-  className="absolute right-[calc(50%-6rem)] translate-x-15 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
-  disabled={timeLeft === 0}
->
-  ⏩
-</button>
-
-</div>
-
-
-{/* 声調ボタン（常に表示） */}
-<div className="flex justify-center gap-4 h-24">
-  <div
-    className={clsx(
-      "flex gap-4 transition-opacity duration-300",
-      showToneButtons ? "opacity-100" : "opacity-30 pointer-events-none"
+    {/* スコア表示（ゲーム中のみ） */}
+    {started && (
+      <div className="flex justify-between w-full text-lg font-bold mt-1 mb-2">
+        <div>得点: {score}</div>
+        <div>残り: {timeLeft}s</div>
+      </div>
     )}
-  >
-{toneSymbols.map((symbol, index) => (
-  <div key={index} className="flex flex-col items-center">
-    {/* 上ラベル */}
-    <div
-      className={clsx(
-        "text-xs mb-1 transition-colors",
-        showToneButtons ? "text-black" : "text-gray-400"
-      )}
-    >
-      {toneLabels[index]}
+
+    {/* 漢字表示エリア（常に高さを確保） */}
+    <div className="flex justify-center gap-4 text-3xl mb-6 min-h-[48px] h-12 items-center">
+      {started && timeLeft > 0 &&
+        current.hanzi.map((char, i) => (
+          <span
+            key={i}
+            className={clsx(
+              i === charIndex
+                ? 'underline decoration-2 underline-offset-8'
+                : ''
+            )}
+          >
+            {char}
+          </span>
+        ))}
     </div>
 
-    {/* ボタン本体 */}
-    <button
-      className={clsx(
-    "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
-    "flex items-center justify-center", // 記号を中央に配置
-        showToneButtons
-          ? "border-green-400 bg-white text-black"
-          : "border-gray-300 bg-gray-100 text-gray-400"
-      )}
-      onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
-    >
-      {symbol}
-    </button>
+    {/* ピンイン入力欄 + スキップボタン（常に高さ固定） */}
+    <div className="relative mb-4 h-14 flex justify-center items-center">
+      <input
+        ref={inputRef}
+        type="text"
+        className={clsx(
+          "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
+          shake && "animate-shake",
+          showToneButtons ? "text-gray-400" : "text-black",
+          !started
+            ? "bg-blue-600 text-white text-lg font-bold cursor-pointer shadow"
+            : [
+                "bg-gray-50",
+                "text-xl",
+                showToneButtons ? "border-gray-300" : "border-green-400"
+              ]
+        )}
+        placeholder={!started ? "Tap to start" : "Type pinyin"}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onFocus={handleFocus}
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
+        disabled={timeLeft === 0}
+      />
 
-    {/* キー表示 */}
-    <div
-      className={clsx(
-        "text-xs mt-1 transition-colors",
-        showToneButtons ? "text-black" : "text-gray-400"
-      )}
-    >
-      ({toneKeys[index]})
+      {/* スキップボタン */}
+      <button
+        onClick={handleSkip}
+        className="absolute right-[calc(50%-6rem)] translate-x-15 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
+        disabled={timeLeft === 0}
+      >
+        ⏩
+      </button>
     </div>
-  </div>
-))}
 
-  </div>
-</div>
+    {/* 声調ボタン */}
+    <div className="flex justify-center gap-4 h-24">
+      <div
+        className={clsx(
+          "flex gap-4 transition-opacity duration-300",
+          showToneButtons ? "opacity-100" : "opacity-30 pointer-events-none"
+        )}
+      >
+        {toneSymbols.map((symbol, index) => (
+          <div key={index} className="flex flex-col items-center">
+            {/* ラベル */}
+            <div
+              className={clsx(
+                "text-xs mb-1 transition-colors",
+                showToneButtons ? "text-black" : "text-gray-400"
+              )}
+            >
+              {toneLabels[index]}
+            </div>
+
+            {/* ボタン */}
+            <button
+              className={clsx(
+                "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
+                "flex items-center justify-center",
+                showToneButtons
+                  ? "border-green-400 bg-white text-black"
+                  : "border-gray-300 bg-gray-100 text-gray-400"
+              )}
+              onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
+            >
+              {symbol}
+            </button>
+
+            {/* キー表示 */}
+            <div
+              className={clsx(
+                "text-xs mt-1 transition-colors",
+                showToneButtons ? "text-black" : "text-gray-400"
+              )}
+            >
+              ({toneKeys[index]})
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* 終了メッセージ */}
+    {timeLeft === 0 && (
+      <div className="text-center mt-6">
+        <p className="text-2xl font-bold">⌛ 時間切れ！</p>
+        <p className="text-lg mt-2">合計得点：{score} 点</p>
+      </div>
+    )}
+  </main>
+);
+
+ 
 
 
-      {/* 終了メッセージ */}
-      {timeLeft === 0 && (
-        <div className="text-center mt-6">
-          <p className="text-2xl font-bold">⌛ 時間切れ！</p>
-          <p className="text-lg mt-2">合計得点：{score} 点</p>
-        </div>
-      )}
-    </main>
-  );
+
 }
