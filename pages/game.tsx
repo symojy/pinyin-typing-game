@@ -23,6 +23,8 @@ export default function Game() {
   const [shake, setShake] = useState(false);
   const [toneLocked, setToneLocked] = useState(false);
 
+  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
+
   const inputRef = useRef<HTMLInputElement>(null);
  
   const [remainingQuestions, setRemainingQuestions] = useState(() =>
@@ -68,36 +70,50 @@ const goToNextQuestion = () => {
   }, [started, timeLeft]);
 
 useEffect(() => {
+  console.log("✅ solved indices:", pinyinSolvedIndices);
+}, [pinyinSolvedIndices]);
+
+useEffect(() => {
   if (
     input.length >= expectedPinyin.length &&
     !showToneButtons &&
     timeLeft > 0
   ) {
-if (input.toLowerCase() === expectedPinyin) {
-  if (expectedTone === 0) {
-    if (toneLocked) return; // 二重処理防止
-setToneLocked(true);
+    if (input.toLowerCase() === expectedPinyin) {
+      if (expectedTone === 0) {
+        if (toneLocked) return;
+        setToneLocked(true);
 
-const isLastChar = charIndex + 1 >= current.hanzi.length;
-if (isLastChar) {
-  setScore((s) => s + 10);
-  setShowScoreUp(true);
-  setTimeout(() => setShowScoreUp(false), 700);
-  setCharIndex(0);
-  setInput('');
-  goToNextQuestion();
-} else {
-  setCharIndex((i) => i + 1);
-  setInput('');
-}
+        // ✅ 軽声のとき：正解インデックスを記録
+        setPinyinSolvedIndices((prev) =>
+          prev.includes(charIndex) ? prev : [...prev, charIndex]
+        );
 
-inputRef.current?.focus();
-setToneLocked(false); // 必ず最後に
+        const isLastChar = charIndex + 1 >= current.hanzi.length;
+        if (isLastChar) {
+          setScore((s) => s + 10);
+          setShowScoreUp(true);
+          setTimeout(() => setShowScoreUp(false), 700);
 
-  } else {
-    setShowToneButtons(true);
-  }
-} else {
+          // ✅ スライドアウトはちょっと遅らせて、緑色表示させる
+          setTimeout(() => {
+            setCharIndex(0);
+            setPinyinSolvedIndices([]); // 次の問題に行く前にリセット
+            setInput('');
+            goToNextQuestion();
+            inputRef.current?.focus();
+          }, 500);
+        } else {
+          setCharIndex((i) => i + 1);
+          setInput('');
+        }
+
+        setTimeout(() => setToneLocked(false), 500);
+      } else {
+        // 声調あり → トーン選択へ
+        setShowToneButtons(true);
+      }
+    } else {
       setShake(true);
       setTimeout(() => setShake(false), 500);
       setInput('');
@@ -109,28 +125,40 @@ setToneLocked(false); // 必ず最後に
   expectedPinyin,
   expectedTone,
   charIndex,
-  current.hanzi.length,
   showToneButtons,
   timeLeft,
+  toneLocked,
 ]);
 
 
+
 const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
-  if (toneLocked) return; // 💡 ロックされてたら何もしない
-  setToneLocked(true);    // 💡 ロック開始
-  
+  if (toneLocked) return;
+  setToneLocked(true);
+
   if (tone === expectedTone) {
+    setPinyinSolvedIndices((prev) =>
+      prev.includes(charIndex) ? prev : [...prev, charIndex]
+    );
+
     const isLastChar = charIndex + 1 >= current.hanzi.length;
 
     if (isLastChar) {
       setScore((s) => s + 10);
       setShowScoreUp(true);
+
+      // ✅ スコア演出は 700ms 維持（今まで通り）
       setTimeout(() => setShowScoreUp(false), 700);
-      setCharIndex(0);
-      setInput('');
-      setShowToneButtons(false);
-      goToNextQuestion();
-      inputRef.current?.focus();
+
+      // ✅ 緑色を一瞬見せてから切り替える（300ms）
+      setTimeout(() => {
+        setCharIndex(0);
+        setPinyinSolvedIndices([]); // ← 忘れずにリセット
+        setInput('');
+        setShowToneButtons(false);
+        goToNextQuestion();
+        inputRef.current?.focus();
+      }, 500);
     } else {
       setCharIndex((i) => i + 1);
       setInput('');
@@ -142,34 +170,38 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
     setTimeout(() => setShake(false), 500);
     inputRef.current?.focus();
   }
-  setTimeout(() => setToneLocked(false), 500); // 💡 ロック解除（必要に応じて時間調整）
+
+  setTimeout(() => setToneLocked(false), 500);
 }, [expectedTone, charIndex, current.hanzi.length, toneLocked]);
 
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (!showToneButtons) return;
 
-      const key = e.key.toLowerCase();
-      let tone: 1 | 2 | 3 | 4 | null = null;
+useEffect(() => {
+  const handleKey = (e: KeyboardEvent) => {
+    if (!showToneButtons) return;
 
-      if (key === 'u') tone = 1;
-      else if (key === 'i') tone = 2;
-      else if (key === 'o') tone = 3;
-      else if (key === 'p') tone = 4;
+    const key = e.key.toLowerCase();
+    let tone: 1 | 2 | 3 | 4 | null = null;
 
-      if (tone && !toneLocked) {
-        e.preventDefault();
-        handleToneSelect(tone);
-      } else {
-        e.preventDefault();
-      }
-      inputRef.current?.focus();
-    };
+    if (key === 'u') tone = 1;
+    else if (key === 'i') tone = 2;
+    else if (key === 'o') tone = 3;
+    else if (key === 'p') tone = 4;
 
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [showToneButtons, handleToneSelect]);
+    e.preventDefault(); // ✅ キーが tone でもそうでなくても、文字入力をブロック！
+
+    if (tone !== null && !toneLocked) {
+      handleToneSelect(tone);
+    }
+
+    // ❌ tone以外なら何もしないが、preventDefault でブロックはする！
+  };
+
+  window.addEventListener('keydown', handleKey);
+  return () => window.removeEventListener('keydown', handleKey);
+}, [showToneButtons, handleToneSelect, toneLocked]);
+
+
 
 
 useEffect(() => {
@@ -236,7 +268,9 @@ return (
   hanzi={current.hanzi}
   currentCharIndex={charIndex}
   wordKey={current.hanzi.join('')}
+  solvedIndices={pinyinSolvedIndices} // ← NEW!
 />
+
   ) : null}
 </div>
 
