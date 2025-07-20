@@ -237,7 +237,7 @@ return (
   key={i}
   className={clsx(
     "flex items-center justify-center rounded-xl transition-all duration-300",
-    "w-14 h-14 text-3xl",
+    "w-17 h-17 text-4xl",
     isCurrent
       ? "font-bold border-blue-300"
       : isSolved
