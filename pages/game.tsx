@@ -211,13 +211,17 @@ useEffect(() => {
 return (
   <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-15 overflow-hidden">
 
-
     {/* 最上部の固定タイトル＆時間バー */}
-    <div className="fixed top-0 left-0 w-full z-50 bg-white">
+    <div className="fixed top-0 left-0 w-full z-50">
       {/* タイトル */}
-      <div className="bg-white text-center font-bold text-lg py-2 border-b border-gray-300">
-        拼音师傅🥋PINYIN MASTER
-      </div>
+<div className="w-full text-center py-2 bg-[#3ca968]">
+  <div className="relative inline-block">
+    <h1 className="relative text-xl font-bold text-[#fada48] z-10">
+      拼音师傅🥋PINYIN MASTER
+    </h1>
+  </div>
+</div>
+
 
       {/* タイムバー */}
       <div className="w-full h-2 bg-gray-300 mb-1">
@@ -286,7 +290,7 @@ return (
           shake && "animate-shake",
           showToneButtons ? "text-gray-400" : "text-black",
           !started
-            ? "bg-blue-600 text-white text-lg font-bold cursor-pointer shadow"
+            ? "bg-[#3ca968] text-white text-white text-lg font-bold cursor-pointer shadow"
             : [
                 "bg-gray-50",
                 "text-xl",
@@ -361,13 +365,45 @@ return (
       </div>
     </div>
 
-    {/* 終了メッセージ */}
-    {timeLeft === 0 && (
-      <div className="text-center mt-6">
-        <p className="text-2xl font-bold">⌛ 時間切れ！</p>
-        <p className="text-lg mt-2">合計得点：{score} 点</p>
-      </div>
-    )}
+{timeLeft === 0 && (
+  <div className="text-center mt-6">
+    <p className="text-2xl font-bold">⌛ 时间到！/ Time's up!</p>
+    <p className="text-lg mt-2">合计得分 / Total Score: {score} pt</p>
+
+    {/* ボタンエリア */}
+<div className="mt-6 flex flex-col items-center space-y-4 w-full max-w-xs mx-auto">
+  <button
+    className="w-full border-4 border-green-400 text-black text-2xl py-2 px-6 rounded-xl shadow"
+    onClick={() => {
+      const shuffled = shuffleArray(questions);
+      setRemainingQuestions(shuffled);
+      setCurrent(shuffled[0]);
+
+      setStarted(false);
+      setScore(0);
+      setInput('');
+      setTimeLeft(60);
+      setShowToneButtons(false);
+      setCharIndex(0);
+      setPinyinSolvedIndices([]);
+    }}
+  >
+    再玩一次 / Play Again
+  </button>
+
+  <button
+    className="w-full border-4 border-gray-400 text-gray-700  text-2xl py-2 px-6 rounded-xl shadow"
+    onClick={() => {
+      window.location.href = '/';
+    }}
+  >
+    回到标题 / Back to Title
+  </button>
+</div>
+
+  </div>
+)}
+
   </main>
 );
 
