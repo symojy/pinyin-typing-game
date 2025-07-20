@@ -128,6 +128,7 @@ useEffect(() => {
   showToneButtons,
   timeLeft,
   toneLocked,
+  current.hanzi.length
 ]);
 
 
@@ -367,7 +368,7 @@ return (
 
 {timeLeft === 0 && (
   <div className="text-center mt-6">
-    <p className="text-2xl font-bold">⌛ 时间到！/ Time's up!</p>
+    <p className="text-2xl font-bold">⌛ 时间到！/ Time is up!</p>
     <p className="text-lg mt-2">合计得分 / Total Score: {score} pt</p>
 
     {/* ボタンエリア */}
