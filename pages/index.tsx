@@ -1,17 +1,44 @@
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 export default function Home() {
   const router = useRouter();
 
+  const handleStart = (level: string) => {
+    router.push(`/game?level=${level}`);
+  };
+
   return (
-    <main className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">🐼 ピンインタイピングゲーム</h1>
-      <button
-        className="bg-blue-500 text-white px-6 py-3 rounded shadow hover:bg-blue-600"
-        onClick={() => router.push('/game?level=easy')}
-      >
-        初級でスタート
-      </button>
+    <main className="flex flex-col items-center justify-center h-screen bg-[#3ca968] px-4">
+      {/* タイトル画像 */}
+      <div className="mb-6">
+        <Image
+          src="/images/title.png" // 👈 ここに画像のパス
+          alt="Pinyin Master Title"
+          width={400}
+          height={200}
+          priority
+        />
+      </div>
+
+      {/* 難易度選択ボタン */}
+<div className="flex flex-col gap-4 w-full max-w-xs">
+  {[
+    { label: '入门 / Intro', level: 'intro' },
+    { label: '初级 / Easy', level: 'easy' },
+    { label: '中级 / Medium', level: 'medium' },
+    { label: '高级 / Hard', level: 'hard' },
+  ].map(({ label, level }) => (
+    <button
+      key={level}
+      className="bg-white text-black py-3 px-4 border border-gray-400 rounded-2xl shadow hover:bg-gray-100 transition"
+      onClick={() => handleStart(level)}
+    >
+      {label}
+    </button>
+  ))}
+</div>
+
     </main>
   );
 }
