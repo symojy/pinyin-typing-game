@@ -232,11 +232,11 @@ return (
 {/* 漢字表示エリア（常に高さを確保） */}
 <div className="h-[90px] mb-1 w-full flex justify-center items-center">
   {started && timeLeft > 0 ? (
-    <WordCard
-      hanzi={current.hanzi}
-      currentCharIndex={charIndex}
-      wordKey={current.id}
-    />
+<WordCard
+  hanzi={current.hanzi}
+  currentCharIndex={charIndex}
+  wordKey={current.hanzi.join('')}
+/>
   ) : null}
 </div>
 
