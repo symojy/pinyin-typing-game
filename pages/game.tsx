@@ -23,8 +23,6 @@ export default function Game() {
   const [toneLocked, setToneLocked] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const [hoppingIndex, setHoppingIndex] = useState<number | null>(null);
  
   const [remainingQuestions, setRemainingQuestions] = useState(() =>
     shuffleArray(questions)
@@ -71,31 +69,31 @@ useEffect(() => {
     !showToneButtons &&
     timeLeft > 0
   ) {
-    if (input.toLowerCase() === expectedPinyin) {
-      if (expectedTone === 0) {
-        // ✅ 軽声ならジャンプ → 処理を遅らせる
-        setHoppingIndex(charIndex);
-        setTimeout(() => {
-          setHoppingIndex(null);
+if (input.toLowerCase() === expectedPinyin) {
+  if (expectedTone === 0) {
+    if (toneLocked) return; // 二重処理防止
+setToneLocked(true);
 
-          const isLastChar = charIndex + 1 >= current.hanzi.length;
-          if (isLastChar) {
-            setScore((s) => s + 10);
-            setShowScoreUp(true);
-            setTimeout(() => setShowScoreUp(false), 700);
-            setCharIndex(0);
-            setInput('');
-            goToNextQuestion();
-          } else {
-            setCharIndex((i) => i + 1);
-            setInput('');
-          }
-          inputRef.current?.focus();
-        }, 400); // アニメーション終了後に進める
-      } else {
-        setShowToneButtons(true);
-      }
-    } else {
+const isLastChar = charIndex + 1 >= current.hanzi.length;
+if (isLastChar) {
+  setScore((s) => s + 10);
+  setShowScoreUp(true);
+  setTimeout(() => setShowScoreUp(false), 700);
+  setCharIndex(0);
+  setInput('');
+  goToNextQuestion();
+} else {
+  setCharIndex((i) => i + 1);
+  setInput('');
+}
+
+inputRef.current?.focus();
+setToneLocked(false); // 必ず最後に
+
+  } else {
+    setShowToneButtons(true);
+  }
+} else {
       setShake(true);
       setTimeout(() => setShake(false), 500);
       setInput('');
@@ -119,12 +117,6 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
   
   if (tone === expectedTone) {
     const isLastChar = charIndex + 1 >= current.hanzi.length;
-
-    // ✅ ジャンプは少し遅らせてスタイル変更が反映されたあとに実行
-    setTimeout(() => {
-      setHoppingIndex(charIndex);
-      setTimeout(() => setHoppingIndex(null), 400);
-    }, 100); // ← ここで50ms遅らせてジャンプ
 
     if (isLastChar) {
       setScore((s) => s + 10);
@@ -252,7 +244,6 @@ return (
       ? "bg-green-100 border-green-400"
       : "border-gray-300 text-gray-500",
     "border border-t-2 border-l-2 border-r-2 border-b-6",
-    i === hoppingIndex && "animate-hop"
   )}
 >
   {char}
