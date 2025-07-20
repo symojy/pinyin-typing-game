@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import clsx from 'clsx';
 import questions from '../data/questions-beginner.json';
+import { WordCard } from '../components/WordCard';
 
 const toneSymbols = ['—', '／', '∨', '＼'];
 const toneKeys = ['u', 'i', 'o', 'p'];
@@ -44,17 +45,20 @@ export default function Game() {
   inputRef.current?.focus();
 };
 
-  const goToNextQuestion = () => {
-    setRemainingQuestions((prev) => {
-      const next = prev.slice(1);
-      if (next.length > 0) {
-        setCurrent(next[0]);
-      } else {
-        setTimeLeft(0);
-      }
-      return next;
-    });
-  };
+const goToNextQuestion = () => {
+  setRemainingQuestions((prev) => {
+    const next = prev.slice(1);
+    if (next.length > 0) {
+      setCurrent(next[0]);
+      setTimeout(() => {
+        inputRef.current?.focus(); // ← スマホ対策
+      }, 10);
+    } else {
+      setTimeLeft(0);
+    }
+    return next;
+  });
+};
 
   useEffect(() => {
     if (started && timeLeft > 0) {
@@ -225,34 +229,16 @@ return (
   )}
 </div>
 
-    {/* 漢字表示エリア（常に高さを確保） */}
-<div className="flex justify-center gap-2 w-48 h-16 mb-6 items-end">
-  {started && timeLeft > 0 &&
-    current.hanzi.map((char, i) => {
-      const isCurrent = i === charIndex;
-      const isSolved = i < charIndex;
-
-      return (
-<span
-  key={i}
-  className={clsx(
-    "flex items-center justify-center rounded-xl transition-all duration-300",
-    "w-17 h-17 text-4xl",
-    isCurrent
-      ? "font-bold border-blue-300"
-      : isSolved
-      ? "bg-green-100 border-green-400"
-      : "border-gray-300 text-gray-500",
-    "border border-t-2 border-l-2 border-r-2 border-b-6",
-  )}
->
-  {char}
-</span>
-
-      );
-    })}
+{/* 漢字表示エリア（常に高さを確保） */}
+<div className="h-[90px] mb-1 w-full flex justify-center items-center">
+  {started && timeLeft > 0 ? (
+    <WordCard
+      hanzi={current.hanzi}
+      currentCharIndex={charIndex}
+      wordKey={current.id}
+    />
+  ) : null}
 </div>
-
 
 
 

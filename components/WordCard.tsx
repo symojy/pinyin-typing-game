@@ -1,26 +1,51 @@
 'use client';
 
+import { motion, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
+
 type Props = {
   hanzi: string[];
   currentCharIndex: number;
+  wordKey: string;
 };
 
-export function WordCard({
-  hanzi,
-  currentCharIndex,
-}: Props) {
+export function WordCard({ hanzi, currentCharIndex, wordKey }: Props) {
   return (
-    <div className="w-full max-w-xs flex justify-center items-center h-[100px] mb-6">
-      <div className="flex gap-2 text-3xl font-bold">
-        {hanzi.map((char, i) => (
-          <span
-            key={i}
-            className={i === currentCharIndex ? 'underline' : ''}
-          >
-            {char}
-          </span>
-        ))}
-      </div>
+    <div className="relative w-full h-[90px] mb-6 overflow-hidden flex justify-center items-center">
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={wordKey}
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -100, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute flex gap-2"
+        >
+          {hanzi.map((char, i) => {
+            const isCurrent = i === currentCharIndex;
+            const isSolved = i < currentCharIndex;
+
+            return (
+              <span
+                key={i}
+                className={clsx(
+                  "flex items-center justify-center rounded-xl transition-all duration-300",
+                  "w-17 h-17 text-4xl",
+                  isCurrent
+                    ? "font-bold border-blue-300"
+                    : isSolved
+                    ? "bg-green-100 border-green-400"
+                    : "border-gray-300 text-gray-500",
+                  "border border-t-2 border-l-2 border-r-2 border-b-6"
+                )}
+              >
+                {char}
+              </span>
+            );
+          })}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
