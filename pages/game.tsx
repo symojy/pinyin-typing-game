@@ -103,9 +103,6 @@ useEffect(() => {
         setTimeout(() => setShowPerfectBonus(false), 700);
       }
 
-      setShowScoreUp(true);
-      setTimeout(() => setShowScoreUp(false), 700);
-
       setTimeout(() => {
         setCharIndex(0);
         setPinyinSolvedIndices([]);
@@ -263,7 +260,7 @@ return (
     </div>
 
 {/* 得点と残り時間（常に高さを確保） */}
-<div className="w-full max-w-md mx-auto text-lg font-bold mt-1 mb-2 flex justify-between h-6">
+<div className="w-full max-w-md mx-auto text-2xl mt-1 mb-2 flex justify-between h-6">
   {started ? (
     <>
 <div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
