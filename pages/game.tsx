@@ -35,6 +35,9 @@ export default function Game() {
   const expectedPinyin = current.pinyin[charIndex];
   const expectedTone = current.tones[charIndex];
 
+  const [showPerfectBonus, setShowPerfectBonus] = useState(false);
+  const [mistakeOccurred, setMistakeOccurred] = useState(false);
+
   const handleFocus = () => {
     if (!started) setStarted(true);
   };
@@ -80,45 +83,53 @@ useEffect(() => {
     timeLeft > 0
   ) {
     if (input.toLowerCase() === expectedPinyin) {
-      if (expectedTone === 0) {
-        if (toneLocked) return;
-        setToneLocked(true);
+  if (expectedTone === 0) {
+    if (toneLocked) return;
+    setToneLocked(true);
+    setPinyinSolvedIndices((prev) =>
+      prev.includes(charIndex) ? prev : [...prev, charIndex]
+    );
 
-        // ✅ 軽声のとき：正解インデックスを記録
-        setPinyinSolvedIndices((prev) =>
-          prev.includes(charIndex) ? prev : [...prev, charIndex]
-        );
+    setScore((s) => s + 10); // ✅ 各文字で10点加算
+    setShowScoreUp(true);
+    setTimeout(() => setShowScoreUp(false), 700);
 
-        const isLastChar = charIndex + 1 >= current.hanzi.length;
-        if (isLastChar) {
-          setScore((s) => s + 10);
-          setShowScoreUp(true);
-          setTimeout(() => setShowScoreUp(false), 700);
-
-          // ✅ スライドアウトはちょっと遅らせて、緑色表示させる
-          setTimeout(() => {
-            setCharIndex(0);
-            setPinyinSolvedIndices([]); // 次の問題に行く前にリセット
-            setInput('');
-            goToNextQuestion();
-            inputRef.current?.focus();
-          }, 500);
-        } else {
-          setCharIndex((i) => i + 1);
-          setInput('');
-        }
-
-        setTimeout(() => setToneLocked(false), 500);
-      } else {
-        // 声調あり → トーン選択へ
-        setShowToneButtons(true);
+    const isLastChar = charIndex + 1 >= current.hanzi.length;
+    if (isLastChar) {
+      const bonus = mistakeOccurred ? 0 : 5; // ✅ パーフェクトボーナス
+      if (bonus > 0) {
+        setScore((s) => s + bonus);
+        setShowPerfectBonus(true);
+        setTimeout(() => setShowPerfectBonus(false), 700);
       }
+
+      setShowScoreUp(true);
+      setTimeout(() => setShowScoreUp(false), 700);
+
+      setTimeout(() => {
+        setCharIndex(0);
+        setPinyinSolvedIndices([]);
+        setInput('');
+        goToNextQuestion();
+        inputRef.current?.focus();
+        setMistakeOccurred(false); // ✅ 次の問題に備えてリセット
+      }, 500);
     } else {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
+      setCharIndex((i) => i + 1);
       setInput('');
-      inputRef.current?.focus();
     }
+
+    setTimeout(() => setToneLocked(false), 500);
+  } else {
+    setShowToneButtons(true);
+  }
+} else {
+  setShake(true);
+  setTimeout(() => setShake(false), 500);
+  setInput('');
+  inputRef.current?.focus();
+  setMistakeOccurred(true); // ✅ ミス記録
+}
   }
 }, [
   input,
@@ -137,40 +148,51 @@ const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
   if (toneLocked) return;
   setToneLocked(true);
 
-  if (tone === expectedTone) {
-    setPinyinSolvedIndices((prev) =>
-      prev.includes(charIndex) ? prev : [...prev, charIndex]
-    );
+if (tone === expectedTone) {
+  setPinyinSolvedIndices((prev) =>
+    prev.includes(charIndex) ? prev : [...prev, charIndex]
+  );
 
-    const isLastChar = charIndex + 1 >= current.hanzi.length;
+  setScore((s) => s + 10); // ✅ 各文字で10点加算
 
-    if (isLastChar) {
-      setScore((s) => s + 10);
-      setShowScoreUp(true);
+  setShowScoreUp(true);
+  setTimeout(() => setShowScoreUp(false), 700);
 
-      // ✅ スコア演出は 700ms 維持（今まで通り）
-      setTimeout(() => setShowScoreUp(false), 700);
+  const isLastChar = charIndex + 1 >= current.hanzi.length;
 
-      // ✅ 緑色を一瞬見せてから切り替える（300ms）
-      setTimeout(() => {
-        setCharIndex(0);
-        setPinyinSolvedIndices([]); // ← 忘れずにリセット
-        setInput('');
-        setShowToneButtons(false);
-        goToNextQuestion();
-        inputRef.current?.focus();
-      }, 500);
-    } else {
-      setCharIndex((i) => i + 1);
+  if (isLastChar) {
+    const bonus = mistakeOccurred ? 0 : 5;
+    if (bonus > 0) {
+      setScore((s) => s + bonus);
+      setShowPerfectBonus(true);
+      setTimeout(() => setShowPerfectBonus(false), 700);
+    }
+
+    setShowScoreUp(true);
+    setTimeout(() => setShowScoreUp(false), 700);
+
+    setTimeout(() => {
+      setCharIndex(0);
+      setPinyinSolvedIndices([]);
       setInput('');
       setShowToneButtons(false);
+      goToNextQuestion();
       inputRef.current?.focus();
-    }
+      setMistakeOccurred(false); // ✅ リセット
+    }, 500);
   } else {
-    setShake(true);
-    setTimeout(() => setShake(false), 500);
+    setCharIndex((i) => i + 1);
+    setInput('');
+    setShowToneButtons(false);
     inputRef.current?.focus();
   }
+} else {
+  setShake(true);
+  setTimeout(() => setShake(false), 500);
+  inputRef.current?.focus();
+  setMistakeOccurred(true); // ✅ ミス記録
+}
+
 
   setTimeout(() => setToneLocked(false), 500);
 }, [expectedTone, charIndex, current.hanzi.length, toneLocked]);
@@ -244,16 +266,29 @@ return (
 <div className="w-full max-w-md mx-auto text-lg font-bold mt-1 mb-2 flex justify-between h-6">
   {started ? (
     <>
-<div className="relative min-h-[2.5rem]">
+<div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
   <div>{score} pt</div>
- <div
+{/* +10pt アニメーション */}
+<div
   className={clsx(
-    "absolute left-full ml-2 top-0 text-green-500 text-m transition-opacity duration-100 whitespace-nowrap",
+    "ml-2 text-green-500 text-m transition-opacity duration-100 whitespace-nowrap",
     showScoreUp ? "animate-score-left opacity-0" : "opacity-0"
   )}
 >
-  +10 pt
+  +10pt
 </div>
+
+{/* +5pt パーフェクトボーナス */}
+<div
+  className={clsx(
+    "ml-2 text-yellow-500 text-m transition-opacity duration-100 whitespace-nowrap",
+    showPerfectBonus ? "animate-score-left opacity-0" : "opacity-0"
+  )}
+>
+   +5pt✨️
+</div>
+
+
 </div>
 
       <div>⏱️ {timeLeft}</div>

@@ -51,7 +51,8 @@ html, body {
   .animate-score-left {
     animation: score-left 1.2s ease-out;
   }
-@keyframes hop {
+
+    @keyframes hop {
   0% {
     transform: translateY(0);
   }
