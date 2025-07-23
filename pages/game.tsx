@@ -259,7 +259,7 @@ return (
     </div>
 
 {/* 得点と残り時間（常に高さを確保） */}
-<div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-between h-0">
+<div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-between h-9">
   {started ? (
     <>
 <div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
@@ -298,7 +298,7 @@ return (
 </div>
 
 {/* 漢字表示エリア（常に高さを確保） */}
-<div className="h-[90px] mb-1 w-full flex justify-center items-center">
+<div className="h-[80px] mb-1 w-full flex justify-center items-center">
   {started && timeLeft > 0 ? (
 <WordCard
   hanzi={current.hanzi}
@@ -371,6 +371,7 @@ return (
 
             {/* ボタン */}
             <button
+              onMouseDown={(e) => e.preventDefault()}
               className={clsx(
                 "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
                 "flex items-center justify-center",
