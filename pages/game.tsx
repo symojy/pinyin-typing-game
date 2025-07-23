@@ -259,7 +259,7 @@ return (
     </div>
 
 {/* 得点と残り時間（常に高さを確保） */}
-<div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-between h-6">
+<div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-between h-0">
   {started ? (
     <>
 <div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
