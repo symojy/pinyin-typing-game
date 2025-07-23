@@ -57,7 +57,7 @@ const goToNextQuestion = () => {
       setCurrent(next[0]);
       setTimeout(() => {
         inputRef.current?.focus(); // ← スマホ対策
-      }, 10);
+      }, 100);
     } else {
       setTimeLeft(0);
     }
