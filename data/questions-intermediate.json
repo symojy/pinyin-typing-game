@@ -1,0 +1,2961 @@
+[
+  {
+    "hanzi": [
+      "今",
+      "天"
+    ],
+    "pinyin": [
+      "jin",
+      "tian"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "明",
+      "天"
+    ],
+    "pinyin": [
+      "ming",
+      "tian"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "昨",
+      "天"
+    ],
+    "pinyin": [
+      "zuo",
+      "tian"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "现",
+      "在"
+    ],
+    "pinyin": [
+      "xian",
+      "zai"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "以",
+      "后"
+    ],
+    "pinyin": [
+      "yi",
+      "hou"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "以",
+      "前"
+    ],
+    "pinyin": [
+      "yi",
+      "qian"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "刚",
+      "才"
+    ],
+    "pinyin": [
+      "gang",
+      "cai"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "马",
+      "上"
+    ],
+    "pinyin": [
+      "ma",
+      "shang"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "经",
+      "常"
+    ],
+    "pinyin": [
+      "jing",
+      "chang"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "有",
+      "时",
+      "候"
+    ],
+    "pinyin": [
+      "you",
+      "shi",
+      "hou"
+    ],
+    "tones": [
+      3,
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "一",
+      "共"
+    ],
+    "pinyin": [
+      "yi",
+      "gong"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "差",
+      "不",
+      "多"
+    ],
+    "pinyin": [
+      "cha",
+      "bu",
+      "duo"
+    ],
+    "tones": [
+      4,
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "特",
+      "别"
+    ],
+    "pinyin": [
+      "te",
+      "bie"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "非",
+      "常"
+    ],
+    "pinyin": [
+      "fei",
+      "chang"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "已",
+      "经"
+    ],
+    "pinyin": [
+      "yi",
+      "jing"
+    ],
+    "tones": [
+      3,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "还",
+      "是"
+    ],
+    "pinyin": [
+      "hai",
+      "shi"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "朋",
+      "友"
+    ],
+    "pinyin": [
+      "peng",
+      "you"
+    ],
+    "tones": [
+      2,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "男",
+      "朋",
+      "友"
+    ],
+    "pinyin": [
+      "nan",
+      "peng",
+      "you"
+    ],
+    "tones": [
+      2,
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "女",
+      "朋",
+      "友"
+    ],
+    "pinyin": [
+      "nv",
+      "peng",
+      "you"
+    ],
+    "tones": [
+      3,
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "同",
+      "事"
+    ],
+    "pinyin": [
+      "tong",
+      "shi"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "邻",
+      "居"
+    ],
+    "pinyin": [
+      "lin",
+      "ju"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "高",
+      "兴"
+    ],
+    "pinyin": [
+      "gao",
+      "xing"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "难",
+      "过"
+    ],
+    "pinyin": [
+      "nan",
+      "guo"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "担",
+      "心"
+    ],
+    "pinyin": [
+      "dan",
+      "xin"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "害",
+      "怕"
+    ],
+    "pinyin": [
+      "hai",
+      "pa"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "着",
+      "急"
+    ],
+    "pinyin": [
+      "zhao",
+      "ji"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "无",
+      "聊"
+    ],
+    "pinyin": [
+      "wu",
+      "liao"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "喜",
+      "欢"
+    ],
+    "pinyin": [
+      "xi",
+      "huan"
+    ],
+    "tones": [
+      3,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "讨",
+      "厌"
+    ],
+    "pinyin": [
+      "tao",
+      "yan"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "生",
+      "气"
+    ],
+    "pinyin": [
+      "sheng",
+      "qi"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "累"
+    ],
+    "pinyin": [
+      "lei"
+    ],
+    "tones": [
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "饿"
+    ],
+    "pinyin": [
+      "e"
+    ],
+    "tones": [
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "渴"
+    ],
+    "pinyin": [
+      "ke"
+    ],
+    "tones": [
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "请",
+      "进"
+    ],
+    "pinyin": [
+      "qing",
+      "jin"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "请",
+      "问"
+    ],
+    "pinyin": [
+      "qing",
+      "wen"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "请",
+      "坐"
+    ],
+    "pinyin": [
+      "qing",
+      "zuo"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "麻",
+      "烦",
+      "你",
+      "了"
+    ],
+    "pinyin": [
+      "ma",
+      "fan",
+      "ni",
+      "le"
+    ],
+    "tones": [
+      2,
+      0,
+      3,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "不",
+      "好",
+      "意",
+      "思"
+    ],
+    "pinyin": [
+      "bu",
+      "hao",
+      "yi",
+      "si"
+    ],
+    "tones": [
+      4,
+      3,
+      4,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "对",
+      "不",
+      "起"
+    ],
+    "pinyin": [
+      "dui",
+      "bu",
+      "qi"
+    ],
+    "tones": [
+      4,
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "没",
+      "关",
+      "系"
+    ],
+    "pinyin": [
+      "mei",
+      "guan",
+      "xi"
+    ],
+    "tones": [
+      2,
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "加",
+      "油"
+    ],
+    "pinyin": [
+      "jia",
+      "you"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "生",
+      "日",
+      "快",
+      "乐"
+    ],
+    "pinyin": [
+      "sheng",
+      "ri",
+      "kuai",
+      "le"
+    ],
+    "tones": [
+      1,
+      4,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "新",
+      "年",
+      "快",
+      "乐"
+    ],
+    "pinyin": [
+      "xin",
+      "nian",
+      "kuai",
+      "le"
+    ],
+    "tones": [
+      1,
+      2,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "回",
+      "头",
+      "见"
+    ],
+    "pinyin": [
+      "hui",
+      "tou",
+      "jian"
+    ],
+    "tones": [
+      2,
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "稍",
+      "等"
+    ],
+    "pinyin": [
+      "shao",
+      "deng"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "等",
+      "一",
+      "下"
+    ],
+    "pinyin": [
+      "deng",
+      "yi",
+      "xia"
+    ],
+    "tones": [
+      3,
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "帮",
+      "帮",
+      "我"
+    ],
+    "pinyin": [
+      "bang",
+      "bang",
+      "wo"
+    ],
+    "tones": [
+      1,
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "可",
+      "以",
+      "吗"
+    ],
+    "pinyin": [
+      "ke",
+      "yi",
+      "ma"
+    ],
+    "tones": [
+      3,
+      3,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "不",
+      "用",
+      "了"
+    ],
+    "pinyin": [
+      "bu",
+      "yong",
+      "le"
+    ],
+    "tones": [
+      2,
+      4,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "没",
+      "问",
+      "题"
+    ],
+    "pinyin": [
+      "mei",
+      "wen",
+      "ti"
+    ],
+    "tones": [
+      2,
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "因",
+      "为"
+    ],
+    "pinyin": [
+      "yin",
+      "wei"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "所",
+      "以"
+    ],
+    "pinyin": [
+      "suo",
+      "yi"
+    ],
+    "tones": [
+      3,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "但",
+      "是"
+    ],
+    "pinyin": [
+      "dan",
+      "shi"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "然",
+      "后"
+    ],
+    "pinyin": [
+      "ran",
+      "hou"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "觉",
+      "得"
+    ],
+    "pinyin": [
+      "jue",
+      "de"
+    ],
+    "tones": [
+      2,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "认",
+      "为"
+    ],
+    "pinyin": [
+      "ren",
+      "wei"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "听",
+      "说"
+    ],
+    "pinyin": [
+      "ting",
+      "shuo"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "记",
+      "得"
+    ],
+    "pinyin": [
+      "ji",
+      "de"
+    ],
+    "tones": [
+      4,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "忘",
+      "记"
+    ],
+    "pinyin": [
+      "wang",
+      "ji"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "打",
+      "算"
+    ],
+    "pinyin": [
+      "da",
+      "suan"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "准",
+      "备"
+    ],
+    "pinyin": [
+      "zhun",
+      "bei"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "开",
+      "始"
+    ],
+    "pinyin": [
+      "kai",
+      "shi"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "结",
+      "束"
+    ],
+    "pinyin": [
+      "jie",
+      "shu"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "继",
+      "续"
+    ],
+    "pinyin": [
+      "ji",
+      "xu"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "帮",
+      "助"
+    ],
+    "pinyin": [
+      "bang",
+      "zhu"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "欢",
+      "迎"
+    ],
+    "pinyin": [
+      "huan",
+      "ying"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "地",
+      "铁"
+    ],
+    "pinyin": [
+      "di",
+      "tie"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "堵",
+      "车"
+    ],
+    "pinyin": [
+      "du",
+      "che"
+    ],
+    "tones": [
+      3,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "路",
+      "口"
+    ],
+    "pinyin": [
+      "lu",
+      "kou"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "附",
+      "近"
+    ],
+    "pinyin": [
+      "fu",
+      "jin"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "对",
+      "面"
+    ],
+    "pinyin": [
+      "dui",
+      "mian"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "电",
+      "梯"
+    ],
+    "pinyin": [
+      "dian",
+      "ti"
+    ],
+    "tones": [
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "二",
+      "楼"
+    ],
+    "pinyin": [
+      "er",
+      "lou"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "出",
+      "发"
+    ],
+    "pinyin": [
+      "chu",
+      "fa"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "到",
+      "达"
+    ],
+    "pinyin": [
+      "dao",
+      "da"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "迷",
+      "路"
+    ],
+    "pinyin": [
+      "mi",
+      "lu"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "拐",
+      "弯"
+    ],
+    "pinyin": [
+      "guai",
+      "wan"
+    ],
+    "tones": [
+      3,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "红",
+      "绿",
+      "灯"
+    ],
+    "pinyin": [
+      "hong",
+      "lv",
+      "deng"
+    ],
+    "tones": [
+      2,
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "人",
+      "行",
+      "道"
+    ],
+    "pinyin": [
+      "ren",
+      "xing",
+      "dao"
+    ],
+    "tones": [
+      2,
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "斑",
+      "马",
+      "线"
+    ],
+    "pinyin": [
+      "ban",
+      "ma",
+      "xian"
+    ],
+    "tones": [
+      1,
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "停",
+      "车",
+      "场"
+    ],
+    "pinyin": [
+      "ting",
+      "che",
+      "chang"
+    ],
+    "tones": [
+      2,
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "洗",
+      "手",
+      "间"
+    ],
+    "pinyin": [
+      "xi",
+      "shou",
+      "jian"
+    ],
+    "tones": [
+      3,
+      3,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "出",
+      "租",
+      "车"
+    ],
+    "pinyin": [
+      "chu",
+      "zu",
+      "che"
+    ],
+    "tones": [
+      1,
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "高",
+      "速",
+      "公",
+      "路"
+    ],
+    "pinyin": [
+      "gao",
+      "su",
+      "gong",
+      "lu"
+    ],
+    "tones": [
+      1,
+      4,
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "打",
+      "折"
+    ],
+    "pinyin": [
+      "da",
+      "zhe"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "便",
+      "宜"
+    ],
+    "pinyin": [
+      "pian",
+      "yi"
+    ],
+    "tones": [
+      2,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "太",
+      "贵"
+    ],
+    "pinyin": [
+      "tai",
+      "gui"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "刷",
+      "卡"
+    ],
+    "pinyin": [
+      "shua",
+      "ka"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "现",
+      "金"
+    ],
+    "pinyin": [
+      "xian",
+      "jin"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "发",
+      "票"
+    ],
+    "pinyin": [
+      "fa",
+      "piao"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "收",
+      "据"
+    ],
+    "pinyin": [
+      "shou",
+      "ju"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "排",
+      "队"
+    ],
+    "pinyin": [
+      "pai",
+      "dui"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "预",
+      "约"
+    ],
+    "pinyin": [
+      "yu",
+      "yue"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "退",
+      "货"
+    ],
+    "pinyin": [
+      "tui",
+      "huo"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "便",
+      "利",
+      "店"
+    ],
+    "pinyin": [
+      "bian",
+      "li",
+      "dian"
+    ],
+    "tones": [
+      4,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "菜",
+      "单"
+    ],
+    "pinyin": [
+      "cai",
+      "dan"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "小",
+      "费"
+    ],
+    "pinyin": [
+      "xiao",
+      "fei"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "包",
+      "装"
+    ],
+    "pinyin": [
+      "bao",
+      "zhuang"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "开",
+      "会"
+    ],
+    "pinyin": [
+      "kai",
+      "hui"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "加",
+      "班"
+    ],
+    "pinyin": [
+      "jia",
+      "ban"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "请",
+      "假"
+    ],
+    "pinyin": [
+      "qing",
+      "jia"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "工",
+      "资"
+    ],
+    "pinyin": [
+      "gong",
+      "zi"
+    ],
+    "tones": [
+      1,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "辞",
+      "职"
+    ],
+    "pinyin": [
+      "ci",
+      "zhi"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "老",
+      "板"
+    ],
+    "pinyin": [
+      "lao",
+      "ban"
+    ],
+    "tones": [
+      3,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "客",
+      "户"
+    ],
+    "pinyin": [
+      "ke",
+      "hu"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "同",
+      "学"
+    ],
+    "pinyin": [
+      "tong",
+      "xue"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "班",
+      "级"
+    ],
+    "pinyin": [
+      "ban",
+      "ji"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "课",
+      "程"
+    ],
+    "pinyin": [
+      "ke",
+      "cheng"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "毕",
+      "业"
+    ],
+    "pinyin": [
+      "bi",
+      "ye"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "面",
+      "试"
+    ],
+    "pinyin": [
+      "mian",
+      "shi"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "发",
+      "烧"
+    ],
+    "pinyin": [
+      "fa",
+      "shao"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "咳",
+      "嗽"
+    ],
+    "pinyin": [
+      "ke",
+      "sou"
+    ],
+    "tones": [
+      2,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "吃",
+      "药"
+    ],
+    "pinyin": [
+      "chi",
+      "yao"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "头",
+      "疼"
+    ],
+    "pinyin": [
+      "tou",
+      "teng"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "牙",
+      "疼"
+    ],
+    "pinyin": [
+      "ya",
+      "teng"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "休",
+      "息"
+    ],
+    "pinyin": [
+      "xi",
+      "xi"
+    ],
+    "tones": [
+      1,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "检",
+      "查"
+    ],
+    "pinyin": [
+      "jian",
+      "cha"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "过",
+      "敏"
+    ],
+    "pinyin": [
+      "guo",
+      "min"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "睡",
+      "觉"
+    ],
+    "pinyin": [
+      "shui",
+      "jiao"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "锻",
+      "炼"
+    ],
+    "pinyin": [
+      "duan",
+      "lian"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "喝",
+      "水"
+    ],
+    "pinyin": [
+      "he",
+      "shui"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "游",
+      "泳"
+    ],
+    "pinyin": [
+      "you",
+      "yong"
+    ],
+    "tones": [
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "跑",
+      "步"
+    ],
+    "pinyin": [
+      "pao",
+      "bu"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "唱",
+      "歌"
+    ],
+    "pinyin": [
+      "chang",
+      "ge"
+    ],
+    "tones": [
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "画",
+      "画"
+    ],
+    "pinyin": [
+      "hua",
+      "hua"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "照",
+      "相"
+    ],
+    "pinyin": [
+      "zhao",
+      "xiang"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "旅",
+      "游"
+    ],
+    "pinyin": [
+      "lv",
+      "you"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "打",
+      "游",
+      "戏"
+    ],
+    "pinyin": [
+      "da",
+      "you",
+      "xi"
+    ],
+    "tones": [
+      3,
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "看",
+      "电",
+      "影"
+    ],
+    "pinyin": [
+      "kan",
+      "dian",
+      "ying"
+    ],
+    "tones": [
+      4,
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "听",
+      "音",
+      "乐"
+    ],
+    "pinyin": [
+      "ting",
+      "yin",
+      "yue"
+    ],
+    "tones": [
+      1,
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "打",
+      "篮",
+      "球"
+    ],
+    "pinyin": [
+      "da",
+      "lan",
+      "qiu"
+    ],
+    "tones": [
+      3,
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "爬",
+      "山"
+    ],
+    "pinyin": [
+      "pa",
+      "shan"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "刮",
+      "风"
+    ],
+    "pinyin": [
+      "gua",
+      "feng"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "下",
+      "雨"
+    ],
+    "pinyin": [
+      "xia",
+      "yu"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "下",
+      "雪"
+    ],
+    "pinyin": [
+      "xia",
+      "xue"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "阴",
+      "天"
+    ],
+    "pinyin": [
+      "yin",
+      "tian"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "台",
+      "风"
+    ],
+    "pinyin": [
+      "tai",
+      "feng"
+    ],
+    "tones": [
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "凉",
+      "快"
+    ],
+    "pinyin": [
+      "liang",
+      "kuai"
+    ],
+    "tones": [
+      4,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "暖",
+      "和"
+    ],
+    "pinyin": [
+      "nuan",
+      "huo"
+    ],
+    "tones": [
+      3,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "春",
+      "天"
+    ],
+    "pinyin": [
+      "chun",
+      "tian"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "夏",
+      "天"
+    ],
+    "pinyin": [
+      "xia",
+      "tian"
+    ],
+    "tones": [
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "冬",
+      "天"
+    ],
+    "pinyin": [
+      "dong",
+      "tian"
+    ],
+    "tones": [
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "美",
+      "国"
+    ],
+    "pinyin": [
+      "mei",
+      "guo"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "日",
+      "本"
+    ],
+    "pinyin": [
+      "ri",
+      "ben"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "韩",
+      "国"
+    ],
+    "pinyin": [
+      "han",
+      "guo"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "英",
+      "国"
+    ],
+    "pinyin": [
+      "ying",
+      "guo"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "法",
+      "国"
+    ],
+    "pinyin": [
+      "fa",
+      "guo"
+    ],
+    "tones": [
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "德",
+      "国"
+    ],
+    "pinyin": [
+      "de",
+      "guo"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "意",
+      "大",
+      "利"
+    ],
+    "pinyin": [
+      "yi",
+      "da",
+      "li"
+    ],
+    "tones": [
+      4,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "西",
+      "班",
+      "牙"
+    ],
+    "pinyin": [
+      "xi",
+      "ban",
+      "ya"
+    ],
+    "tones": [
+      1,
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "俄",
+      "罗",
+      "斯"
+    ],
+    "pinyin": [
+      "e",
+      "luo",
+      "si"
+    ],
+    "tones": [
+      2,
+      2,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "泰",
+      "国"
+    ],
+    "pinyin": [
+      "tai",
+      "guo"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "越",
+      "南"
+    ],
+    "pinyin": [
+      "yue",
+      "nan"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "印",
+      "度"
+    ],
+    "pinyin": [
+      "yin",
+      "du"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "澳",
+      "大",
+      "利",
+      "亚"
+    ],
+    "pinyin": [
+      "ao",
+      "da",
+      "li",
+      "ya"
+    ],
+    "tones": [
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "加",
+      "拿",
+      "大"
+    ],
+    "pinyin": [
+      "jia",
+      "na",
+      "da"
+    ],
+    "tones": [
+      1,
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "英",
+      "语"
+    ],
+    "pinyin": [
+      "ying",
+      "yu"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "汉",
+      "语"
+    ],
+    "pinyin": [
+      "han",
+      "yu"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "日",
+      "语"
+    ],
+    "pinyin": [
+      "ri",
+      "yu"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "法",
+      "语"
+    ],
+    "pinyin": [
+      "fa",
+      "yu"
+    ],
+    "tones": [
+      3,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "韩",
+      "语"
+    ],
+    "pinyin": [
+      "han",
+      "yu"
+    ],
+    "tones": [
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "美",
+      "国",
+      "人"
+    ],
+    "pinyin": [
+      "mei",
+      "guo",
+      "ren"
+    ],
+    "tones": [
+      3,
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "日",
+      "本",
+      "人"
+    ],
+    "pinyin": [
+      "ri",
+      "ben",
+      "ren"
+    ],
+    "tones": [
+      4,
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "外",
+      "国",
+      "人"
+    ],
+    "pinyin": [
+      "wai",
+      "guo",
+      "ren"
+    ],
+    "tones": [
+      4,
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "护",
+      "照"
+    ],
+    "pinyin": [
+      "hu",
+      "zhao"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "面",
+      "包"
+    ],
+    "pinyin": [
+      "mian",
+      "bao"
+    ],
+    "tones": [
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "烧",
+      "饼"
+    ],
+    "pinyin": [
+      "shao",
+      "bing"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "拉",
+      "面"
+    ],
+    "pinyin": [
+      "la",
+      "mian"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "炒",
+      "面"
+    ],
+    "pinyin": [
+      "chao",
+      "mian"
+    ],
+    "tones": [
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "汉",
+      "堡"
+    ],
+    "pinyin": [
+      "han",
+      "bao"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "冰",
+      "淇",
+      "淋"
+    ],
+    "pinyin": [
+      "bing",
+      "qi",
+      "lin"
+    ],
+    "tones": [
+      1,
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "巧",
+      "克",
+      "力"
+    ],
+    "pinyin": [
+      "qiao",
+      "ke",
+      "li"
+    ],
+    "tones": [
+      3,
+      3,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "蛋",
+      "糕"
+    ],
+    "pinyin": [
+      "dan",
+      "gao"
+    ],
+    "tones": [
+      4,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "烤",
+      "鸭"
+    ],
+    "pinyin": [
+      "kao",
+      "ya"
+    ],
+    "tones": [
+      3,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "麻",
+      "婆",
+      "豆",
+      "腐"
+    ],
+    "pinyin": [
+      "ma",
+      "po",
+      "dou",
+      "fu"
+    ],
+    "tones": [
+      2,
+      2,
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "宫",
+      "保",
+      "鸡",
+      "丁"
+    ],
+    "pinyin": [
+      "gong",
+      "bao",
+      "ji",
+      "ding"
+    ],
+    "tones": [
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  {
+    "hanzi": [
+      "绿",
+      "茶"
+    ],
+    "pinyin": [
+      "lv",
+      "cha"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "红",
+      "茶"
+    ],
+    "pinyin": [
+      "hong",
+      "cha"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "酸",
+      "奶"
+    ],
+    "pinyin": [
+      "suan",
+      "nai"
+    ],
+    "tones": [
+      1,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "矿",
+      "泉",
+      "水"
+    ],
+    "pinyin": [
+      "kuang",
+      "quan",
+      "shui"
+    ],
+    "tones": [
+      4,
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "啤",
+      "酒"
+    ],
+    "pinyin": [
+      "pi",
+      "jiu"
+    ],
+    "tones": [
+      2,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "蜂",
+      "蜜",
+      "水"
+    ],
+    "pinyin": [
+      "feng",
+      "mi",
+      "shui"
+    ],
+    "tones": [
+      1,
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "介",
+      "绍"
+    ],
+    "pinyin": [
+      "jie",
+      "shao"
+    ],
+    "tones": [
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "打",
+      "电",
+      "话"
+    ],
+    "pinyin": [
+      "da",
+      "dian",
+      "hua"
+    ],
+    "tones": [
+      3,
+      4,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "发",
+      "短",
+      "信"
+    ],
+    "pinyin": [
+      "fa",
+      "duan",
+      "xin"
+    ],
+    "tones": [
+      1,
+      3,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "上",
+      "网"
+    ],
+    "pinyin": [
+      "shang",
+      "wang"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "密",
+      "码"
+    ],
+    "pinyin": [
+      "mi",
+      "ma"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "地",
+      "图"
+    ],
+    "pinyin": [
+      "di",
+      "tu"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "钥",
+      "匙"
+    ],
+    "pinyin": [
+      "yao",
+      "shi"
+    ],
+    "tones": [
+      4,
+      0
+    ]
+  },
+  {
+    "hanzi": [
+      "警",
+      "察",
+      "局"
+    ],
+    "pinyin": [
+      "jing",
+      "cha",
+      "ju"
+    ],
+    "tones": [
+      3,
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "公",
+      "园"
+    ],
+    "pinyin": [
+      "gong",
+      "yuan"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "机",
+      "票"
+    ],
+    "pinyin": [
+      "ji",
+      "piao"
+    ],
+    "tones": [
+      1,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "登",
+      "机",
+      "牌"
+    ],
+    "pinyin": [
+      "deng",
+      "ji",
+      "pai"
+    ],
+    "tones": [
+      1,
+      3,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "洗",
+      "澡"
+    ],
+    "pinyin": [
+      "xi",
+      "zao"
+    ],
+    "tones": [
+      3,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "厕",
+      "所"
+    ],
+    "pinyin": [
+      "ce",
+      "suo"
+    ],
+    "tones": [
+      4,
+      3
+    ]
+  },
+  {
+    "hanzi": [
+      "随",
+      "便"
+    ],
+    "pinyin": [
+      "sui",
+      "bian"
+    ],
+    "tones": [
+      2,
+      4
+    ]
+  },
+  {
+    "hanzi": [
+      "新",
+      "闻"
+    ],
+    "pinyin": [
+      "xin",
+      "wen"
+    ],
+    "tones": [
+      1,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "问",
+      "题"
+    ],
+    "pinyin": [
+      "wen",
+      "ti"
+    ],
+    "tones": [
+      4,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "回",
+      "答"
+    ],
+    "pinyin": [
+      "hui",
+      "da"
+    ],
+    "tones": [
+      2,
+      2
+    ]
+  },
+  {
+    "hanzi": [
+      "西",
+      "班",
+      "牙",
+      "语"
+    ],
+    "pinyin": [
+      "xi",
+      "ban",
+      "ya",
+      "yu"
+    ],
+    "tones": [
+      1,
+      1,
+      2,
+      3
+    ]
+  }
+]

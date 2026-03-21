@@ -1,447 +1,620 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import clsx from 'clsx';
-import questions from '../data/questions-beginner.json';
+import beginnerQuestions from '../data/questions-beginner.json';
+import intermediateQuestions from '../data/questions-intermediate.json';
 import { WordCard } from '../components/WordCard';
 
-const toneSymbols = ['—', '／', '∨', '＼'];
-const toneKeys = ['u', 'i', 'o', 'p'];
-const toneLabels = ['第一声', '第二声', '第三声', '第四声'];
-const MAX_TIME = 60; // 最大制限時間（秒）
+type QuestionItem = (typeof beginnerQuestions)[number];
+
+const MAX_TIME_SECONDS = 60;
+const BASE_POINTS_PER_CHAR = 10; // 拼音が合っていれば基本点
 
 function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+function normalizePinyinInput(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+}
+
+function stripSpaces(value: string) {
+  return value.replace(/\s+/g, '');
+}
+
+/**
+ * 拼音比較用: ü（ウムラウト付き u）とキーボード入力の v を同一視する。
+ * ǖ ǘ ǚ ǜ（ü + 声調）も v に寄せる。
+ */
+function normalizeUmlautUForCompare(s: string) {
+  return s
+    .trim()
+    .toLowerCase()
+    .normalize('NFC')
+    .replace(/\u00fc/g, 'v') // ü
+    .replace(/\u01d6|\u01d8|\u01da|\u01dc/g, 'v'); // ǖ ǘ ǚ ǜ
+}
+
+/**
+ * 正解データが ü（正規化後は v）のとき、ウムラウトを打てず u だけ打った場合も正解にする。
+ * 期待が本当の「lu」で入力が「lv」のときは不正解のまま（位置ごとに v のときだけ u を許容）。
+ */
+function matchesWithUmlautUFallback(expected: string, typed: string) {
+  if (expected.length !== typed.length) return false;
+  for (let i = 0; i < expected.length; i++) {
+    const e = expected[i];
+    const t = typed[i];
+    if (e === t) continue;
+    if (e === 'v' && t === 'u') continue;
+    return false;
+  }
+  return true;
+}
+
 export default function Game() {
+  const router = useRouter();
+
   const [started, setStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(MAX_TIME_SECONDS);
   const [score, setScore] = useState(0);
   const [showScoreUp, setShowScoreUp] = useState(false);
-  const [charIndex, setCharIndex] = useState(0);
-  const [input, setInput] = useState('');
-  const [showToneButtons, setShowToneButtons] = useState(false);
-  const [shake, setShake] = useState(false);
-  const [toneLocked, setToneLocked] = useState(false);
-
-  const [pinyinSolvedIndices, setPinyinSolvedIndices] = useState<number[]>([]);
+  const [scoreUpText, setScoreUpText] = useState<string | null>(null);
+  const [glowIndices, setGlowIndices] = useState<number[]>([]);
+  const [isScoring, setIsScoring] = useState(false);
+  const [comboCount, setComboCount] = useState(0);
+  const [maxComboAchieved, setMaxComboAchieved] = useState(0);
+  const [wordsSolved, setWordsSolved] = useState(0);
+  /** 终局理由：时间到 / 题目做完 */
+  const [finishKind, setFinishKind] = useState<'time' | 'bank' | null>(null);
+  const [scorePulseId, setScorePulseId] = useState(0);
+  const [shake] = useState(false);
+  const [wordShake, setWordShake] = useState(false);
+  const [shareHint, setShareHint] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
- 
-  const [remainingQuestions, setRemainingQuestions] = useState(() =>
-    shuffleArray(questions)
+  const scoringRunRef = useRef(0);
+
+  // SSR と CSR の最初の描画を一致させるため、初期レンダーでは shuffle しない。
+  // ランダム化はクライアント側のマウント後に行う。
+  const [, setRemainingQuestions] = useState<QuestionItem[]>(
+    () => beginnerQuestions
   );
-  const [current, setCurrent] = useState(() => remainingQuestions[0]);
+  const [current, setCurrent] = useState<QuestionItem>(
+    () => beginnerQuestions[0]
+  );
+  const [activeBank, setActiveBank] = useState<QuestionItem[]>(beginnerQuestions);
 
-  const expectedPinyin = current.pinyin[charIndex];
-  const expectedTone = current.tones[charIndex];
+  const [pinyinInput, setPinyinInput] = useState('');
 
-  const [showPerfectBonus, setShowPerfectBonus] = useState(false);
-  const [mistakeOccurred, setMistakeOccurred] = useState(false);
+  const levelKey =
+    router.isReady && router.query.level
+      ? Array.isArray(router.query.level)
+        ? router.query.level[0]
+        : router.query.level
+      : undefined;
+
+  const isHardLevel = levelKey === 'hard';
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (isHardLevel) return;
+
+    const bank: QuestionItem[] =
+      levelKey === 'medium' ? intermediateQuestions : beginnerQuestions;
+
+    setActiveBank(bank);
+    const shuffled = shuffleArray(bank);
+    setRemainingQuestions(shuffled);
+    setCurrent(shuffled[0]);
+
+    setStarted(false);
+    setScore(0);
+    setComboCount(0);
+    setMaxComboAchieved(0);
+    setWordsSolved(0);
+    setFinishKind(null);
+    setShareHint(null);
+    setScorePulseId(0);
+    setTimeLeft(MAX_TIME_SECONDS);
+    setPinyinInput('');
+    setGlowIndices([]);
+    setIsScoring(false);
+    setWordShake(false);
+    scoringRunRef.current += 1;
+  }, [router.isReady, levelKey, isHardLevel]);
+
+  const expectedPinyinWithSpaces = useMemo(
+    () => current.pinyin.join(' ').toLowerCase(),
+    [current.pinyin]
+  );
+  const expectedPinyinNoSpaces = useMemo(
+    () => stripSpaces(expectedPinyinWithSpaces),
+    [expectedPinyinWithSpaces]
+  );
+  const expectedCompareWithSpaces = useMemo(
+    () => normalizeUmlautUForCompare(expectedPinyinWithSpaces),
+    [expectedPinyinWithSpaces]
+  );
+  const expectedCompareNoSpaces = useMemo(
+    () => normalizeUmlautUForCompare(expectedPinyinNoSpaces),
+    [expectedPinyinNoSpaces]
+  );
 
   const handleFocus = () => {
     if (!started) setStarted(true);
   };
 
-  const handleSkip = () => {
-  setCharIndex(0);
-  setInput('');
-  setShowToneButtons(false);
-  goToNextQuestion();
-  inputRef.current?.focus();
-};
+  const goToNextQuestion = useCallback(() => {
+    setRemainingQuestions((prev) => {
+      const next = prev.slice(1);
+      if (next.length > 0) {
+        setCurrent(next[0]);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      } else {
+        setFinishKind('bank');
+        setTimeLeft(0);
+      }
+      return next;
+    });
+  }, []);
 
-const goToNextQuestion = () => {
-  setRemainingQuestions((prev) => {
-    const next = prev.slice(1);
-    if (next.length > 0) {
-      setCurrent(next[0]);
-      setTimeout(() => {
-        inputRef.current?.focus(); // ← スマホ対策
-      }, 100);
-    } else {
-      setTimeLeft(0);
-    }
-    return next;
-  });
-};
+  const handleSkipWord = () => {
+    scoringRunRef.current += 1; // 現在進行中の得点演出を無効化
+    setIsScoring(false);
+    setGlowIndices([]);
+    setComboCount(0);
+    setPinyinInput('');
+    setWordShake(false);
+    goToNextQuestion();
+  };
+
+  const showScorePopup = useCallback((text: string) => {
+    setScoreUpText(text);
+    setShowScoreUp(true);
+    window.setTimeout(() => setShowScoreUp(false), 700);
+  }, []);
 
   useEffect(() => {
     if (started && timeLeft > 0) {
-      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-      return () => clearInterval(timer);
+      const timer = window.setInterval(
+        () => setTimeLeft((prev) => prev - 1),
+        1000
+      );
+      return () => window.clearInterval(timer);
     }
   }, [started, timeLeft]);
 
-useEffect(() => {
-  console.log("✅ solved indices:", pinyinSolvedIndices);
-}, [pinyinSolvedIndices]);
+  /** 倒计时自然到 0 → 标记为时间到（题目先做完则已为 bank） */
+  useEffect(() => {
+    if (!started || timeLeft !== 0) return;
+    setFinishKind((k) => (k == null ? 'time' : k));
+  }, [started, timeLeft]);
 
-useEffect(() => {
-  if (
-    input.length >= expectedPinyin.length &&
-    !showToneButtons &&
-    timeLeft > 0
-  ) {
-    if (input.toLowerCase() === expectedPinyin) {
-  if (expectedTone === 0) {
-    if (toneLocked) return;
-    setToneLocked(true);
-    setPinyinSolvedIndices((prev) =>
-      prev.includes(charIndex) ? prev : [...prev, charIndex]
+  // 拼音だけ：正解したら基本点 → 次の問題へ（スマホでも入力テンポを切らない）
+  useEffect(() => {
+    if (!started || timeLeft <= 0) return;
+    if (isScoring) return;
+    const normalized = normalizePinyinInput(pinyinInput);
+    if (normalized.length === 0) return;
+
+    const typedCompareNoSpaces = normalizeUmlautUForCompare(
+      stripSpaces(normalized)
     );
+    const typedCompareWithSpaces = normalizeUmlautUForCompare(normalized);
+    const expectedLen = expectedCompareNoSpaces.length;
 
-    setScore((s) => s + 10); // ✅ 各文字で10点加算
-    setShowScoreUp(true);
-    setTimeout(() => setShowScoreUp(false), 700);
+    // スペースを除いた「拼音の文字数」が期待の全長に達するまで判定しない（途中は自由に打てる）
+    if (typedCompareNoSpaces.length < expectedLen) return;
 
-    const isLastChar = charIndex + 1 >= current.hanzi.length;
-    if (isLastChar) {
-      const bonus = mistakeOccurred ? 0 : 5; // ✅ パーフェクトボーナス
-      if (bonus > 0) {
-        setScore((s) => s + bonus);
-        setShowPerfectBonus(true);
-        setTimeout(() => setShowPerfectBonus(false), 700);
+    const isCorrect =
+      typedCompareWithSpaces === expectedCompareWithSpaces ||
+      typedCompareNoSpaces === expectedCompareNoSpaces ||
+      matchesWithUmlautUFallback(
+        expectedCompareWithSpaces,
+        typedCompareWithSpaces
+      ) ||
+      matchesWithUmlautUFallback(
+        expectedCompareNoSpaces,
+        typedCompareNoSpaces
+      );
+
+    // 期待より長く打ったらミス扱い（ブルブル＆リセット）
+    if (typedCompareNoSpaces.length > expectedLen || !isCorrect) {
+      scoringRunRef.current += 1;
+      setComboCount(0);
+      setGlowIndices([]);
+      setWordShake(true);
+      window.setTimeout(() => setWordShake(false), 380);
+      setPinyinInput('');
+      return;
+    }
+
+    const hanziLen = current.hanzi.length;
+    const nextCombo = comboCount + 1;
+    const multiplier = 1 + Math.min(nextCombo - 1, 9) * 0.1;
+    const pointsPerChar = Math.round(BASE_POINTS_PER_CHAR * multiplier);
+    const baseTotal = hanziLen * pointsPerChar;
+
+    setMaxComboAchieved((m) => Math.max(m, nextCombo));
+    setWordsSolved((w) => w + 1);
+
+    scoringRunRef.current += 1;
+    const runId = scoringRunRef.current;
+
+    setIsScoring(true);
+    setGlowIndices([]);
+    setComboCount(nextCombo);
+    setPinyinInput('');
+    showScorePopup(`+${baseTotal}pt  COMBO x${nextCombo} ✨`);
+
+    // 1文字ごとに得点＆枠を光らせる
+    for (let idx = 0; idx < hanziLen; idx++) {
+      const t = idx * 140;
+      window.setTimeout(() => {
+        if (scoringRunRef.current !== runId) return;
+
+        setGlowIndices((prev) =>
+          prev.includes(idx) ? prev : [...prev, idx]
+        );
+        setScore((s) => s + pointsPerChar);
+        setScorePulseId((v) => v + 1);
+
+        if (idx === hanziLen - 1) {
+          window.setTimeout(() => {
+            if (scoringRunRef.current !== runId) return;
+            setGlowIndices([]);
+            setIsScoring(false);
+            goToNextQuestion();
+            inputRef.current?.focus();
+          }, 80);
+        }
+      }, t);
+    }
+  }, [
+    started,
+    timeLeft,
+    isScoring,
+    comboCount,
+    pinyinInput,
+    expectedCompareWithSpaces,
+    expectedCompareNoSpaces,
+    current.hanzi.length,
+    showScorePopup,
+    goToNextQuestion,
+  ]);
+
+  const solvedIndicesForCard = glowIndices;
+
+  const levelLabelShort =
+    levelKey === 'medium' ? '中级' : levelKey === 'hard' ? '高级' : '入门';
+
+  const showEndModal = started && timeLeft === 0;
+
+  const resetRound = useCallback(() => {
+    const shuffled = shuffleArray(activeBank);
+    setRemainingQuestions(shuffled);
+    setCurrent(shuffled[0]);
+    setStarted(false);
+    setScore(0);
+    setComboCount(0);
+    setMaxComboAchieved(0);
+    setWordsSolved(0);
+    setFinishKind(null);
+    setShareHint(null);
+    setScorePulseId(0);
+    setTimeLeft(MAX_TIME_SECONDS);
+    setPinyinInput('');
+    setGlowIndices([]);
+    setIsScoring(false);
+    setWordShake(false);
+    scoringRunRef.current += 1;
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }, [activeBank]);
+
+  const handleShare = useCallback(async () => {
+    const lines = [
+      `【拼音师傅 Pinyin Master】${levelLabelShort}`,
+      `得分 ${score} pt · 最高连击 x${maxComboAchieved} · 答对 ${wordsSolved} 题`,
+      `${score} pts · Max combo x${maxComboAchieved} · ${wordsSolved} words cleared`,
+    ];
+    const text = lines.join('\n');
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: 'Pinyin Master', text });
+        setShareHint('已分享 · Shared');
+      } else if (
+        typeof navigator !== 'undefined' &&
+        navigator.clipboard?.writeText
+      ) {
+        await navigator.clipboard.writeText(text);
+        setShareHint('已复制到剪贴板 · Copied');
+      } else {
+        window.prompt('Copy:', text);
+        setShareHint(null);
+        return;
       }
-
-      setTimeout(() => {
-        setCharIndex(0);
-        setPinyinSolvedIndices([]);
-        setInput('');
-        goToNextQuestion();
-        inputRef.current?.focus();
-        setMistakeOccurred(false); // ✅ 次の問題に備えてリセット
-      }, 500);
-    } else {
-      setCharIndex((i) => i + 1);
-      setInput('');
+    } catch {
+      try {
+        await navigator.clipboard.writeText(text);
+        setShareHint('已复制到剪贴板 · Copied');
+      } catch {
+        setShareHint('无法分享（请手动复制）');
+      }
     }
+    window.setTimeout(() => setShareHint(null), 3200);
+  }, [levelLabelShort, score, maxComboAchieved, wordsSolved]);
 
-    setTimeout(() => setToneLocked(false), 500);
-  } else {
-    setShowToneButtons(true);
-  }
-} else {
-  setShake(true);
-  setTimeout(() => setShake(false), 500);
-  setInput('');
-  inputRef.current?.focus();
-  setMistakeOccurred(true); // ✅ ミス記録
-}
-  }
-}, [
-  input,
-  expectedPinyin,
-  expectedTone,
-  charIndex,
-  showToneButtons,
-  timeLeft,
-  toneLocked,
-  current.hanzi.length
-]);
-
-
-
-const handleToneSelect = useCallback((tone: 1 | 2 | 3 | 4) => {
-  if (toneLocked) return;
-  setToneLocked(true);
-
-if (tone === expectedTone) {
-  setPinyinSolvedIndices((prev) =>
-    prev.includes(charIndex) ? prev : [...prev, charIndex]
-  );
-
-  setScore((s) => s + 10); // ✅ 各文字で10点加算
-
-  setShowScoreUp(true);
-  setTimeout(() => setShowScoreUp(false), 700);
-
-  const isLastChar = charIndex + 1 >= current.hanzi.length;
-
-  if (isLastChar) {
-    const bonus = mistakeOccurred ? 0 : 5;
-    if (bonus > 0) {
-      setScore((s) => s + bonus);
-      setShowPerfectBonus(true);
-      setTimeout(() => setShowPerfectBonus(false), 700);
-    }
-
-    setShowScoreUp(true);
-    setTimeout(() => setShowScoreUp(false), 700);
-
-    setTimeout(() => {
-      setCharIndex(0);
-      setPinyinSolvedIndices([]);
-      setInput('');
-      setShowToneButtons(false);
-      goToNextQuestion();
-      setMistakeOccurred(false); // ✅ リセット
-    }, 500);
-  } else {
-    setCharIndex((i) => i + 1);
-    setInput('');
-    setShowToneButtons(false);
-    inputRef.current?.focus();
-  }
-} else {
-  setShake(true);
-  setTimeout(() => setShake(false), 500);
-  inputRef.current?.focus();
-  setMistakeOccurred(true); // ✅ ミス記録
-}
-
-
-  setTimeout(() => setToneLocked(false), 500);
-}, [expectedTone, charIndex, current.hanzi.length, toneLocked]);
-
-
-
-useEffect(() => {
-  const handleKey = (e: KeyboardEvent) => {
-    if (!showToneButtons) return;
-
-    const key = e.key.toLowerCase();
-    let tone: 1 | 2 | 3 | 4 | null = null;
-
-    if (key === 'u') tone = 1;
-    else if (key === 'i') tone = 2;
-    else if (key === 'o') tone = 3;
-    else if (key === 'p') tone = 4;
-
-    e.preventDefault(); // ✅ キーが tone でもそうでなくても、文字入力をブロック！
-
-    if (tone !== null && !toneLocked) {
-      handleToneSelect(tone);
-    }
-
-    // ❌ tone以外なら何もしないが、preventDefault でブロックはする！
-  };
-
-  window.addEventListener('keydown', handleKey);
-  return () => window.removeEventListener('keydown', handleKey);
-}, [showToneButtons, handleToneSelect, toneLocked]);
-
-
-
-
-useEffect(() => {
-  console.log("showScoreUp", showScoreUp);
-}, [showScoreUp]);
-
-return (
-  <main className="p-4 max-w-md mx-auto flex flex-col items-center justify-start pt-15 overflow-hidden">
-
-    {/* 最上部の固定タイトル＆時間バー */}
-    <div className="fixed top-0 left-0 w-full z-50">
-      {/* タイトル */}
-<div className="w-full text-center py-2 bg-[#3ca968]">
-  <div className="relative inline-block">
-    <h1 className="relative text-xl font-bold text-[#fada48] z-10">
-      拼音师傅🥋PINYIN MASTER
-    </h1>
-  </div>
-</div>
-
-
-      {/* タイムバー */}
-      <div className="w-full h-2 bg-gray-300 mb-1">
-        <div
-          className={clsx(
-            "h-full transition-all duration-100",
-            timeLeft > 20
-              ? "bg-green-300"
-              : timeLeft > 10
-              ? "bg-yellow-400"
-              : "bg-red-500"
-          )}
-          style={{ width: `${(timeLeft / MAX_TIME) * 100}%` }}
-        ></div>
+  if (!router.isReady) {
+    return (
+      <div className="min-h-[100dvh] bg-[#3ca968] flex items-center justify-center text-white text-lg font-bold">
+        Loading…
       </div>
-    </div>
+    );
+  }
 
-{/* 得点と残り時間（常に高さを確保） */}
-<div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-between h-9">
-  {started ? (
+  if (isHardLevel) {
+    return (
+      <div className="min-h-[100dvh] bg-[#3ca968] flex flex-col items-center justify-center px-6 text-center">
+        <p className="text-2xl font-bold text-[#fada48] mb-2">高级模式</p>
+        <p className="text-white text-lg mb-2">开发中 / Under construction</p>
+        <p className="text-white/85 text-sm mb-8 max-w-sm">
+          次のアップデートで追加予定です。
+        </p>
+        <button
+          type="button"
+          className="border-4 border-gray-200 bg-white text-black rounded-2xl px-8 py-3 font-bold shadow"
+          onClick={() => router.push('/')}
+        >
+          回到标题 / Back to Title
+        </button>
+      </div>
+    );
+  }
+
+  const endHeadline =
+    finishKind === 'bank'
+      ? { zh: '全部答完！', sub: 'All words in this round!' }
+      : { zh: '时间到！', sub: "Time's up!" };
+
+  return (
     <>
-<div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
-  <div>{score} pt</div>
-{/* +10pt アニメーション */}
-<div
-  className={clsx(
-    "ml-2 text-green-500 text-m transition-opacity duration-100 whitespace-nowrap",
-    showScoreUp ? "animate-score-left opacity-0" : "opacity-0"
-  )}
->
-  +10pt
-</div>
-
-{/* +5pt パーフェクトボーナス */}
-<div
-  className={clsx(
-    "ml-2 text-yellow-500 text-m transition-opacity duration-100 whitespace-nowrap",
-    showPerfectBonus ? "animate-score-left opacity-0" : "opacity-0"
-  )}
->
-   +5pt✨️
-</div>
-
-
-</div>
-
-      <div>⏱️ {timeLeft}</div>
-    </>
-  ) : (
-    <>
-      <div>&nbsp;</div>
-      <div>&nbsp;</div>
-    </>
-  )}
-</div>
-
-{/* 漢字表示エリア（常に高さを確保） */}
-<div className="h-[80px] mb-1 w-full flex justify-center items-center">
-  {started && timeLeft > 0 ? (
-<WordCard
-  hanzi={current.hanzi}
-  currentCharIndex={charIndex}
-  wordKey={current.hanzi.join('')}
-  solvedIndices={pinyinSolvedIndices} // ← NEW!
-/>
-
-  ) : null}
-</div>
-
-
-
-    {/* ピンイン入力欄 + スキップボタン（常に高さ固定） */}
-    <div className="relative mb-4 h-14 flex justify-center items-center">
-      <input
-        ref={inputRef}
-        type="text"
-        className={clsx(
-          "w-40 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none",
-          shake && "animate-shake",
-          showToneButtons ? "text-gray-400" : "text-black",
-          !started
-            ? "bg-[#3ca968] text-white text-white text-lg font-bold cursor-pointer shadow"
-            : [
-                "bg-gray-50",
-                "text-xl",
-                showToneButtons ? "border-gray-300" : "border-blue-300"
-              ]
-        )}
-        placeholder={!started ? "Tap to start" : "Type pinyin"}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onFocus={handleFocus}
-        spellCheck={false}
-        autoCorrect="off"
-        autoCapitalize="off"
-        disabled={timeLeft === 0}
-      />
-
-      {/* スキップボタン */}
-      <button
-        onClick={handleSkip}
-        className="absolute right-[calc(50%-6rem)] translate-x-15 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
-        disabled={timeLeft === 0}
-      >
-        ⏩
-      </button>
-    </div>
-
-    {/* 声調ボタン */}
-    <div className="flex justify-center gap-4 h-24">
-      <div
-        className={clsx(
-          "flex gap-4 transition-opacity duration-300",
-          showToneButtons ? "opacity-100" : "opacity-30 pointer-events-none"
-        )}
-      >
-        {toneSymbols.map((symbol, index) => (
-          <div key={index} className="flex flex-col items-center">
-            {/* ラベル */}
-            <div
-              className={clsx(
-                "text-xs mb-1 transition-colors",
-                showToneButtons ? "text-black" : "text-gray-400"
-              )}
-            >
-              {toneLabels[index]}
+      {showEndModal ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/55 backdrop-blur-[2px] animate-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="result-modal-title"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card">
+            <div className="bg-[#3ca968] px-5 py-4 text-center">
+              <p
+                id="result-modal-title"
+                className="text-[#fada48] text-2xl font-black tracking-tight"
+              >
+                {endHeadline.zh}
+              </p>
+              <p className="text-white/90 text-sm mt-1">{endHeadline.sub}</p>
             </div>
 
-            {/* ボタン */}
-            <button
-              onMouseDown={(e) => e.preventDefault()}
-              className={clsx(
-                "w-16 h-16 text-3xl font-bold rounded-2xl transition-all duration-300 border-4",
-                "flex items-center justify-center",
-                showToneButtons
-                  ? "border-blue-300 bg-white text-black"
-                  : "border-gray-300 bg-gray-100 text-gray-400"
-              )}
-              onClick={() => handleToneSelect((index + 1) as 1 | 2 | 3 | 4)}
-            >
-              {symbol}
-            </button>
+            <div className="px-5 py-5 space-y-4">
+              <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200/80 px-4 py-4 text-center">
+                <p className="text-xs font-semibold text-amber-900/70 uppercase tracking-wider">
+                  本局得分 / Score
+                </p>
+                <p className="text-5xl font-black text-[#3ca968] tabular-nums leading-tight mt-1">
+                  {score}
+                </p>
+                <p className="text-sm text-gray-600 font-medium">pt</p>
+              </div>
 
-            {/* キー表示 */}
-            <div
-              className={clsx(
-                "text-xs mt-1 transition-colors",
-                showToneButtons ? "text-black" : "text-gray-400"
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-gray-50 border border-gray-200 px-3 py-3 text-center">
+                  <p className="text-[11px] font-bold text-gray-500 uppercase">
+                    最高连击
+                  </p>
+                  <p className="text-xs text-gray-400">Max combo</p>
+                  <p className="text-2xl font-black text-orange-600 mt-1 tabular-nums">
+                    ×{maxComboAchieved}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-gray-50 border border-gray-200 px-3 py-3 text-center">
+                  <p className="text-[11px] font-bold text-gray-500 uppercase">
+                    答对题数
+                  </p>
+                  <p className="text-xs text-gray-400">Words cleared</p>
+                  <p className="text-2xl font-black text-[#3ca968] mt-1 tabular-nums">
+                    {wordsSolved}
+                  </p>
+                </div>
+              </div>
+
+              {maxComboAchieved >= 5 && (
+                <p className="text-center text-sm font-bold text-orange-700 bg-orange-100/80 rounded-xl py-2 px-3 border border-orange-200">
+                  🔥 连击 {maxComboAchieved}！手感火热！
+                </p>
               )}
-            >
-              ({toneKeys[index]})
+
+              {shareHint ? (
+                <p className="text-center text-xs text-gray-600">{shareHint}</p>
+              ) : null}
+
+              <div className="flex flex-col gap-2.5 pt-1">
+                <button
+                  type="button"
+                  className="w-full rounded-2xl bg-[#3ca968] text-white font-bold text-lg py-3.5 border-2 border-[#2d8a52] shadow-md active:scale-[0.98] transition-transform"
+                  onClick={resetRound}
+                >
+                  再玩一次 / Play again
+                </button>
+                <button
+                  type="button"
+                  className="w-full rounded-2xl bg-white text-gray-800 font-bold text-lg py-3.5 border-4 border-gray-200 active:scale-[0.98] transition-transform"
+                  onClick={() => router.push('/')}
+                >
+                  回到标题 / Title
+                </button>
+                <button
+                  type="button"
+                  className="w-full rounded-2xl bg-[#fada48] text-black font-bold text-lg py-3.5 border-2 border-amber-400 shadow active:scale-[0.98] transition-transform"
+                  onClick={() => void handleShare()}
+                >
+                  分享成绩 / Share
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+        </div>
+      ) : null}
+
+      <div className="fixed top-0 left-0 w-full z-50">
+        <div className="w-full text-center bg-[#3ca968] pt-[env(safe-area-inset-top)] py-2">
+          <div className="relative inline-block">
+            <h1 className="relative text-xl font-bold text-[#fada48] z-10">
+              拼音师傅🥋PINYIN MASTER
+            </h1>
+          </div>
+        </div>
+
+        <div className="w-full h-2 bg-gray-300 mb-1">
+          <div
+            className={clsx(
+              'h-full transition-all duration-100',
+              timeLeft > 20
+                ? 'bg-green-300'
+                : timeLeft > 10
+                  ? 'bg-yellow-400'
+                  : 'bg-red-500'
+            )}
+            style={{ width: `${(timeLeft / MAX_TIME_SECONDS) * 100}%` }}
+          />
+        </div>
       </div>
-    </div>
 
-{timeLeft === 0 && (
-  <div className="text-center mt-6">
-    <p className="text-2xl font-bold">⌛ 时间到！/ Time is up!</p>
-    <p className="text-lg mt-2">合计得分 / Total Score: {score} pt</p>
+      {/* body は overflow:hidden。スクロールが必要な時はここだけスクロールさせる */}
+      <div className="h-[100dvh] overflow-y-auto overscroll-contain">
+        <main className="p-4 pt-24 max-w-md mx-auto flex flex-col items-center justify-start">
+      <div
+        className={clsx(
+          'h-[80px] mb-1 w-full flex justify-center items-center',
+          wordShake && 'animate-shake'
+        )}
+      >
+        {started && timeLeft > 0 ? (
+          <WordCard
+            hanzi={current.hanzi}
+            currentCharIndex={-1}
+            wordKey={current.hanzi.join('')}
+            solvedIndices={solvedIndicesForCard}
+          />
+        ) : null}
+      </div>
 
-    {/* ボタンエリア */}
-<div className="mt-6 flex flex-col items-center space-y-4 w-full max-w-xs mx-auto">
-  <button
-    className="w-full border-4 border-green-400 text-black text-2xl py-2 px-6 rounded-xl shadow"
-    onClick={() => {
-      const shuffled = shuffleArray(questions);
-      setRemainingQuestions(shuffled);
-      setCurrent(shuffled[0]);
+      {/* 拼音入力 */}
+      <div className="w-full flex flex-col items-center gap-3 mb-4">
+        <div className="w-full flex items-center justify-between text-sm text-gray-700 px-1">
+          <div className="flex-1 text-left">
+            Type the full pinyin. Spaces optional.
+            <div className="text-xs text-gray-500 mt-1">
+              e.g. <span className="font-mono">{expectedPinyinWithSpaces}</span>
+            </div>
+          </div>
+          {/* 手元のタイマー表示（ヘッダーが隠れても残り時間が分かるように） */}
+          <div
+            className={clsx(
+              'ml-3 flex items-center px-2 py-1 rounded-full text-xs font-semibold border',
+              timeLeft > 20
+                ? 'bg-green-100 text-green-800 border-green-300'
+                : timeLeft > 10
+                  ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                  : 'bg-red-100 text-red-800 border-red-300'
+            )}
+          >
+            <span className="mr-1">⏱</span>
+            <span>{timeLeft}s</span>
+          </div>
+        </div>
 
-      setStarted(false);
-      setScore(0);
-      setInput('');
-      setTimeLeft(60);
-      setShowToneButtons(false);
-      setCharIndex(0);
-      setPinyinSolvedIndices([]);
-    }}
-  >
-    再玩一次 / Play Again
-  </button>
+        <div className="w-full flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="text"
+            className={clsx(
+              'flex-1 min-w-0 px-4 py-3 text-center rounded-2xl transition-all duration-300 border-4 outline-none font-sans',
+              shake && 'animate-shake',
+              !started
+                ? 'bg-[#3ca968] text-white text-lg font-bold cursor-pointer shadow'
+                : 'bg-gray-50 text-xl border-blue-300 text-black'
+            )}
+            placeholder={!started ? 'Tap to start' : 'Type pinyin'}
+            value={pinyinInput}
+            onChange={(e) => {
+              if (isScoring) return;
+              setPinyinInput(e.target.value);
+            }}
+            onFocus={handleFocus}
+            spellCheck={false}
+            autoCorrect="off"
+            autoCapitalize="off"
+            disabled={timeLeft === 0}
+            readOnly={isScoring}
+          />
 
-  <button
-    className="w-full border-4 border-gray-400 text-gray-700  text-2xl py-2 px-6 rounded-xl shadow"
-    onClick={() => {
-      window.location.href = '/';
-    }}
-  >
-    回到标题 / Back to Title
-  </button>
-</div>
+          <button
+            onClick={handleSkipWord}
+            className="shrink-0 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
+            disabled={timeLeft === 0}
+            aria-label="Skip"
+          >
+            ⏩
+          </button>
+        </div>
+      </div>
 
-  </div>
-)}
+      {/* スコアと手元タイマーが常にフォーム付近に来るよう、フォームのすぐ下に配置 */}
+      <div className="w-full max-w-md mx-auto text-xl mt-1 mb-2 flex justify-start h-9">
+        {started ? (
+          <>
+            <div className="flex items-baseline min-h-[2.5rem] relative space-x-2">
+              <div key={scorePulseId} className="animate-hop">
+                {score} pt
+              </div>
+              <div
+                className={clsx(
+                  'ml-2 text-green-500 text-m transition-opacity duration-100 whitespace-nowrap',
+                  showScoreUp ? 'animate-score-left' : 'opacity-0'
+                )}
+              >
+                {scoreUpText ?? ''}
+              </div>
+              {comboCount > 1 && (
+                <div
+                  className={clsx(
+                    'ml-3 px-2 py-1 rounded-full text-xs font-bold border',
+                    comboCount > 5
+                      ? 'bg-red-100 text-red-800 border-red-300'
+                      : 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                  )}
+                >
+                  🔥 x{comboCount}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <div>&nbsp;</div>
+            <div>&nbsp;</div>
+          </>
+        )}
+      </div>
 
-  </main>
-);
-
- 
-
-
-
+        </main>
+      </div>
+    </>
+  );
 }

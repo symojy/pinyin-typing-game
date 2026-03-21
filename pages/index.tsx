@@ -25,10 +25,9 @@ export default function Home() {
     {/* 難易度ボタン */}
     <div className="flex flex-col gap-4 w-full max-w-xs">
       {[
-        { label: '入门 / Intro', level: 'intro' },
-        { label: '初级 / Easy', level: 'easy' },
-        { label: '中级 / Medium', level: 'medium' },
-        { label: '高级 / Hard', level: 'hard' },
+        { label: '入门 / Intro（100 词）', level: 'intro' },
+        { label: '中级 / Medium（200 词）', level: 'medium' },
+        { label: '高级 / Hard（开发中）', level: 'hard' },
       ].map(({ label, level }) => (
         <button
           key={level}
