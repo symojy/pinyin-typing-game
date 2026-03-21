@@ -3,8 +3,15 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        // Duolingo っぽい丸み優先（英字は Nunito、漢字などは Noto Sans）
+        // 英数字: Nunito、それ以外の本文: Noto（WordCard の漢字は font-hanzi）
         sans: ['var(--font-nunito)', 'var(--font-noto)', 'sans-serif'],
+        hanzi: [
+          'var(--font-zcool-kuaile)',
+          'var(--font-noto)',
+          'PingFang SC',
+          'Microsoft YaHei',
+          'sans-serif',
+        ],
       },
     },
   },

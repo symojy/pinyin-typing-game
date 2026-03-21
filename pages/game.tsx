@@ -7,8 +7,15 @@ import { WordCard } from '../components/WordCard';
 
 type QuestionItem = (typeof beginnerQuestions)[number];
 
-const MAX_TIME_SECONDS = 60;
+const MAX_TIME_SECONDS = 30;
 const BASE_POINTS_PER_CHAR = 10; // 拼音が合っていれば基本点
+
+/**
+ * 共有テキスト末尾の「遊んでみたくなる一言」＋その直前の空行のあとに URL を付けます。
+ * 文言を変えたいときはここだけ編集してください。
+ */
+const SHARE_VIRAL_HOOK =
+  '30秒拼音快闪，你也来挑战一下？ / 30s pinyin sprint — can you beat my score?';
 
 function shuffleArray<T>(array: T[]): T[] {
   return [...array].sort(() => Math.random() - 0.5);
@@ -290,8 +297,13 @@ export default function Game() {
 
   const solvedIndicesForCard = glowIndices;
 
-  const levelLabelShort =
-    levelKey === 'medium' ? '中级' : levelKey === 'hard' ? '高级' : '入门';
+  /** 結果モーダル・共有文用（hard はゲーム外だが型のため） */
+  const difficultyForResult = useMemo(() => {
+    if (levelKey === 'medium') {
+      return { zh: '中级', en: 'Medium', line: '中级 / Medium' };
+    }
+    return { zh: '入门', en: 'Intro', line: '入门 / Intro' };
+  }, [levelKey]);
 
   const showEndModal = started && timeLeft === 0;
 
@@ -317,15 +329,24 @@ export default function Game() {
   }, [activeBank]);
 
   const handleShare = useCallback(async () => {
+    const origin =
+      typeof window !== 'undefined' ? window.location.origin : '';
+    const homeUrl = origin ? `${origin}/` : '';
     const lines = [
-      `【拼音师傅 Pinyin Master】${levelLabelShort}`,
-      `得分 ${score} pt · 最高连击 x${maxComboAchieved} · 答对 ${wordsSolved} 题`,
-      `${score} pts · Max combo x${maxComboAchieved} · ${wordsSolved} words cleared`,
+      `【拼音师傅 Pinyin Master】${difficultyForResult.line}`,
+      `得分/Score: ${score} pt`,
+      `最高连击/Max combo: ×${maxComboAchieved}`,
+      `答对题数/Words cleared: ${wordsSolved}`,
+      '',
+      SHARE_VIRAL_HOOK,
+      '',
+      homeUrl || '(open the site URL)',
     ];
     const text = lines.join('\n');
+    const shareTitle = `Pinyin Master · ${difficultyForResult.zh}`;
     try {
       if (typeof navigator !== 'undefined' && navigator.share) {
-        await navigator.share({ title: 'Pinyin Master', text });
+        await navigator.share({ title: shareTitle, text });
         setShareHint('已分享 · Shared');
       } else if (
         typeof navigator !== 'undefined' &&
@@ -347,7 +368,7 @@ export default function Game() {
       }
     }
     window.setTimeout(() => setShareHint(null), 3200);
-  }, [levelLabelShort, score, maxComboAchieved, wordsSolved]);
+  }, [difficultyForResult, score, maxComboAchieved, wordsSolved]);
 
   if (!router.isReady) {
     return (
@@ -399,6 +420,9 @@ export default function Game() {
                 {endHeadline.zh}
               </p>
               <p className="text-white/90 text-sm mt-1">{endHeadline.sub}</p>
+              <p className="mt-3 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white ring-1 ring-white/30">
+                难度 / Level: {difficultyForResult.zh} · {difficultyForResult.en}
+              </p>
             </div>
 
             <div className="px-5 py-5 space-y-4">
@@ -471,36 +495,12 @@ export default function Game() {
         </div>
       ) : null}
 
-      <div className="fixed top-0 left-0 w-full z-50">
-        <div className="w-full text-center bg-[#3ca968] pt-[env(safe-area-inset-top)] py-2">
-          <div className="relative inline-block">
-            <h1 className="relative text-xl font-bold text-[#fada48] z-10">
-              拼音师傅🥋PINYIN MASTER
-            </h1>
-          </div>
-        </div>
-
-        <div className="w-full h-2 bg-gray-300 mb-1">
-          <div
-            className={clsx(
-              'h-full transition-all duration-100',
-              timeLeft > 20
-                ? 'bg-green-300'
-                : timeLeft > 10
-                  ? 'bg-yellow-400'
-                  : 'bg-red-500'
-            )}
-            style={{ width: `${(timeLeft / MAX_TIME_SECONDS) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* body は overflow:hidden。スクロールが必要な時はここだけスクロールさせる */}
+      {/* タイトルバー・上部プログレスは廃止（スマホキーボードで隠れるため）。残り時間は入力付近のバッジで表示 */}
       <div className="h-[100dvh] overflow-y-auto overscroll-contain">
-        <main className="p-4 pt-24 max-w-md mx-auto flex flex-col items-center justify-start">
+        <main className="p-4 pt-[max(1rem,env(safe-area-inset-top))] max-w-md mx-auto flex flex-col items-center justify-start">
       <div
         className={clsx(
-          'h-[80px] mb-1 w-full flex justify-center items-center',
+          'mt-5 h-[80px] mb-1 w-full flex justify-center items-center',
           wordShake && 'animate-shake'
         )}
       >
@@ -520,16 +520,17 @@ export default function Game() {
           <div className="flex-1 text-left">
             Type the full pinyin. Spaces optional.
             <div className="text-xs text-gray-500 mt-1">
-              e.g. <span className="font-mono">{expectedPinyinWithSpaces}</span>
+              e.g.{' '}
+              <span className="font-sans tracking-wide">{expectedPinyinWithSpaces}</span>
             </div>
           </div>
-          {/* 手元のタイマー表示（ヘッダーが隠れても残り時間が分かるように） */}
+          {/* 残り時間（秒） */}
           <div
             className={clsx(
               'ml-3 flex items-center px-2 py-1 rounded-full text-xs font-semibold border',
-              timeLeft > 20
+              timeLeft > 10
                 ? 'bg-green-100 text-green-800 border-green-300'
-                : timeLeft > 10
+                : timeLeft > 5
                   ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
                   : 'bg-red-100 text-red-800 border-red-300'
             )}

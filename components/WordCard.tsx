@@ -33,7 +33,7 @@ export function WordCard({ hanzi, currentCharIndex, wordKey, solvedIndices }: Pr
   key={i}
   className={clsx(
   "flex items-center justify-center rounded-xl transition-all duration-300",
-  "w-17 h-17 text-4xl bg-white font-sans",
+  "w-17 h-17 text-4xl bg-white font-hanzi",
   isSolved
     ? "bg-gradient-to-b from-yellow-200 to-yellow-100 border-yellow-500 text-yellow-950 ring-4 ring-yellow-200 shadow-[0_0_0.75rem_rgba(250,218,72,0.95),0_0_2.5rem_rgba(250,218,72,0.35)] animate-char-glow"
     : isCurrent
