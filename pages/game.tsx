@@ -82,6 +82,7 @@ export default function Game() {
   const [shareHint, setShareHint] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const resultModalRef = useRef<HTMLDivElement>(null);
   const scoringRunRef = useRef(0);
 
   // SSR と CSR の最初の描画を一致させるため、初期レンダーでは shuffle しない。
@@ -277,7 +278,7 @@ export default function Game() {
             setGlowIndices([]);
             setIsScoring(false);
             goToNextQuestion();
-            inputRef.current?.focus();
+            // フォーカスは goToNextQuestion 内（次問があるときのみ）。最後の1問で input に戻すと終了モーダル中も打鍵がボタンに届きやすい
           }, 80);
         }
       }, t);
@@ -306,6 +307,16 @@ export default function Game() {
   }, [levelKey]);
 
   const showEndModal = started && timeLeft === 0;
+
+  /** 終了直後も入力欄にフォーカスが残ると Space/Enter がボタンに飛びやすい → モーダルへ移す */
+  useEffect(() => {
+    if (!showEndModal) return;
+    inputRef.current?.blur();
+    const id = window.requestAnimationFrame(() => {
+      resultModalRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [showEndModal]);
 
   const resetRound = useCallback(() => {
     const shuffled = shuffleArray(activeBank);
@@ -411,7 +422,11 @@ export default function Game() {
           aria-modal="true"
           aria-labelledby="result-modal-title"
         >
-          <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card">
+          <div
+            ref={resultModalRef}
+            tabIndex={-1}
+            className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card outline-none focus-visible:ring-4 focus-visible:ring-[#fada48]/90 focus-visible:ring-offset-2 focus-visible:ring-offset-black/20"
+          >
             <div className="bg-[#3ca968] px-5 py-4 text-center">
               <p
                 id="result-modal-title"
@@ -496,7 +511,11 @@ export default function Game() {
       ) : null}
 
       {/* タイトルバー・上部プログレスは廃止（スマホキーボードで隠れるため）。残り時間は入力付近のバッジで表示 */}
-      <div className="h-[100dvh] overflow-y-auto overscroll-contain">
+      <div
+        className="h-[100dvh] overflow-y-auto overscroll-contain"
+        inert={showEndModal ? true : undefined}
+        aria-hidden={showEndModal ? true : undefined}
+      >
         <main className="p-4 pt-[max(1rem,env(safe-area-inset-top))] max-w-md mx-auto flex flex-col items-center justify-start">
       <div
         className={clsx(
