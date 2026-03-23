@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Nunito, Noto_Sans_SC, ZCOOL_KuaiLe } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <Component {...pageProps} />
+      <Analytics />
     </main>
   );
 }
