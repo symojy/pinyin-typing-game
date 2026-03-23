@@ -8,7 +8,10 @@ export default function Home() {
   const ogTitle = 'Pinyin Master';
   const ogDescription =
     '30秒拼音快闪，你也来挑战一下？ / 30s pinyin sprint — can you beat my score?';
-  const ogImage = '/images/title.png';
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? 'https://pinyin-typing-game.vercel.app';
+  const ogImage = `${baseUrl}/images/title.png`;
+  const ogUrl = `${baseUrl}/`;
 
   const handleStart = (level: string) => {
     router.push(`/game?level=${level}`);
@@ -21,6 +24,7 @@ export default function Home() {
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={ogUrl} />
         <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1536" />
         <meta property="og:image:height" content="1024" />
