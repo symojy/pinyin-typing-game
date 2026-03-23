@@ -80,10 +80,14 @@ export default function Game() {
   const [shake] = useState(false);
   const [wordShake, setWordShake] = useState(false);
   const [shareHint, setShareHint] = useState<string | null>(null);
+  const [isTimeUpCutIn, setIsTimeUpCutIn] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const resultModalRef = useRef<HTMLDivElement>(null);
   const scoringRunRef = useRef(0);
+  const finishKindRef = useRef<'time' | 'bank' | null>(null);
+  const timeUpLockedRef = useRef(false);
+  const timeUpCutInTimeoutRef = useRef<number | null>(null);
 
   // SSR と CSR の最初の描画を一致させるため、初期レンダーでは shuffle しない。
   // ランダム化はクライアント側のマウント後に行う。
@@ -105,6 +109,10 @@ export default function Game() {
       : undefined;
 
   const isHardLevel = levelKey === 'hard';
+
+  useEffect(() => {
+    finishKindRef.current = finishKind;
+  }, [finishKind]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -164,6 +172,8 @@ export default function Game() {
           inputRef.current?.focus();
         }, 100);
       } else {
+        // finishKindRef を先に更新して、タイマー側の誤判定を防ぐ
+        finishKindRef.current = 'bank';
         setFinishKind('bank');
         setTimeLeft(0);
       }
@@ -172,6 +182,8 @@ export default function Game() {
   }, []);
 
   const handleSkipWord = () => {
+    // タイムアップカットイン中は誤操作を無効化する（render の遅延でも弾く）
+    if (timeUpLockedRef.current) return;
     scoringRunRef.current += 1; // 現在進行中の得点演出を無効化
     setIsScoring(false);
     setGlowIndices([]);
@@ -180,6 +192,20 @@ export default function Game() {
     setWordShake(false);
     goToNextQuestion();
   };
+
+  const triggerTimeUpCutIn = useCallback(() => {
+    if (timeUpLockedRef.current) return;
+    timeUpLockedRef.current = true;
+    finishKindRef.current = 'time';
+    setFinishKind('time');
+    setIsTimeUpCutIn(true);
+
+    timeUpCutInTimeoutRef.current = window.setTimeout(() => {
+      timeUpLockedRef.current = false;
+      setIsTimeUpCutIn(false);
+      timeUpCutInTimeoutRef.current = null;
+    }, 2000);
+  }, []);
 
   const showScorePopup = useCallback((text: string) => {
     setScoreUpText(text);
@@ -190,12 +216,22 @@ export default function Game() {
   useEffect(() => {
     if (started && timeLeft > 0) {
       const timer = window.setInterval(
-        () => setTimeLeft((prev) => prev - 1),
+        () =>
+          setTimeLeft((prev) => {
+            const next = prev - 1;
+
+            // タイマーが 0 へ到達した瞬間にカットインを出す（0 の瞬間の誤タップ対策）
+            if (next <= 0 && finishKindRef.current !== 'bank') {
+              triggerTimeUpCutIn();
+            }
+
+            return next;
+          }),
         1000
       );
       return () => window.clearInterval(timer);
     }
-  }, [started, timeLeft]);
+  }, [started, timeLeft, triggerTimeUpCutIn]);
 
   /** 倒计时自然到 0 → 标记为时间到（题目先做完则已为 bank） */
   useEffect(() => {
@@ -306,7 +342,12 @@ export default function Game() {
     return { zh: '入门', en: 'Intro', line: '入门 / Intro' };
   }, [levelKey]);
 
-  const showEndModal = started && timeLeft === 0;
+  const showEndModal = started && timeLeft === 0 && !isTimeUpCutIn;
+
+  useEffect(() => {
+    if (!isTimeUpCutIn) return;
+    inputRef.current?.blur();
+  }, [isTimeUpCutIn]);
 
   /** 終了直後も入力欄にフォーカスが残ると Space/Enter がボタンに飛びやすい → モーダルへ移す */
   useEffect(() => {
@@ -319,6 +360,14 @@ export default function Game() {
   }, [showEndModal]);
 
   const resetRound = useCallback(() => {
+    // 途中で再開した場合にカットインのタイマーを止める
+    if (timeUpCutInTimeoutRef.current != null) {
+      window.clearTimeout(timeUpCutInTimeoutRef.current);
+      timeUpCutInTimeoutRef.current = null;
+    }
+    timeUpLockedRef.current = false;
+    setIsTimeUpCutIn(false);
+
     const shuffled = shuffleArray(activeBank);
     setRemainingQuestions(shuffled);
     setCurrent(shuffled[0]);
@@ -327,6 +376,7 @@ export default function Game() {
     setComboCount(0);
     setMaxComboAchieved(0);
     setWordsSolved(0);
+    finishKindRef.current = null;
     setFinishKind(null);
     setShareHint(null);
     setScorePulseId(0);
@@ -412,29 +462,53 @@ export default function Game() {
     finishKind === 'bank'
       ? { zh: '全部答完！', sub: 'All words in this round!' }
       : { zh: '时间到！', sub: "Time's up!" };
+  const isTimeUp = finishKind === 'time';
 
   return (
     <>
+      {isTimeUpCutIn ? (
+        <div
+          className="fixed inset-0 z-[105] flex items-center justify-center p-4 bg-black/55 backdrop-blur-[2px] animate-modal-backdrop"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card">
+            <div className="bg-[#3ca968] px-5 py-6 text-center">
+              <p className="text-[#fada48] text-2xl font-black tracking-tight">
+                时间到！
+              </p>
+              <p className="text-white/90 text-sm mt-1">
+                Time&apos;s up!
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {showEndModal ? (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/55 backdrop-blur-[2px] animate-modal-backdrop"
           role="dialog"
           aria-modal="true"
-          aria-labelledby="result-modal-title"
+          aria-label="Result"
         >
           <div
             ref={resultModalRef}
             tabIndex={-1}
-            className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card outline-none focus-visible:ring-4 focus-visible:ring-[#fada48]/90 focus-visible:ring-offset-2 focus-visible:ring-offset-black/20"
+            className="w-full max-w-sm rounded-3xl bg-white shadow-2xl border-4 border-[#fada48] overflow-hidden animate-modal-card outline-none"
           >
             <div className="bg-[#3ca968] px-5 py-4 text-center">
-              <p
-                id="result-modal-title"
-                className="text-[#fada48] text-2xl font-black tracking-tight"
-              >
-                {endHeadline.zh}
-              </p>
-              <p className="text-white/90 text-sm mt-1">{endHeadline.sub}</p>
+              {!isTimeUp ? (
+                <>
+                  <p
+                    id="result-modal-title"
+                    className="text-[#fada48] text-2xl font-black tracking-tight"
+                  >
+                    {endHeadline.zh}
+                  </p>
+                  <p className="text-white/90 text-sm mt-1">{endHeadline.sub}</p>
+                </>
+              ) : null}
               <p className="mt-3 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white ring-1 ring-white/30">
                 难度 / Level: {difficultyForResult.zh} · {difficultyForResult.en}
               </p>
@@ -513,8 +587,8 @@ export default function Game() {
       {/* タイトルバー・上部プログレスは廃止（スマホキーボードで隠れるため）。残り時間は入力付近のバッジで表示 */}
       <div
         className="h-[100dvh] overflow-y-auto overscroll-contain"
-        inert={showEndModal ? true : undefined}
-        aria-hidden={showEndModal ? true : undefined}
+        inert={showEndModal || isTimeUpCutIn ? true : undefined}
+        aria-hidden={showEndModal || isTimeUpCutIn ? true : undefined}
       >
         <main className="p-4 pt-[max(1rem,env(safe-area-inset-top))] max-w-md mx-auto flex flex-col items-center justify-start">
       <div
@@ -574,20 +648,21 @@ export default function Game() {
             value={pinyinInput}
             onChange={(e) => {
               if (isScoring) return;
+              if (timeUpLockedRef.current) return;
               setPinyinInput(e.target.value);
             }}
             onFocus={handleFocus}
             spellCheck={false}
             autoCorrect="off"
             autoCapitalize="off"
-            disabled={timeLeft === 0}
-            readOnly={isScoring}
+            disabled={timeLeft === 0 || isTimeUpCutIn}
+            readOnly={isScoring || isTimeUpCutIn}
           />
 
           <button
             onClick={handleSkipWord}
             className="shrink-0 border-4 border-gray-200 rounded-xl px-4 py-3 text-lg font-bold"
-            disabled={timeLeft === 0}
+            disabled={timeLeft === 0 || isTimeUpCutIn}
             aria-label="Skip"
           >
             ⏩
